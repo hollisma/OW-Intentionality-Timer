@@ -1,84 +1,13 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OW Focus Timer</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-slate-900 text-white font-sans min-h-screen flex items-center justify-center">
-
-    <div class="bg-slate-800 p-8 rounded-xl shadow-2xl w-96 border border-slate-700">
-        <h1 class="text-2xl font-bold mb-6 text-orange-500">OW Intentionality</h1>
-        
-        <div class="space-y-4">
-            <div>
-                <label class="block text-sm font-medium mb-1">Focus Skill</label>
-                <input id="skillInput" type="text" placeholder="e.g. High Ground, Ult Tracking" 
-                    class="w-full bg-slate-700 p-2 rounded border border-slate-600 focus:outline-none focus:border-orange-500">
-            </div>
-
-            <div>
-                <label class="block text-sm font-medium mb-1">Interval (Seconds)</label>
-                <input id="intervalInput" type="number" value="60" 
-                    class="w-full bg-slate-700 p-2 rounded border border-slate-600 focus:outline-none focus:border-orange-500">
-            </div>
-
-            <div class="pt-4">
-                <button id="startBtn" class="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-2 rounded transition">
-                    Start Session
-                </button>
-                <button id="stopBtn" class="w-full mt-2 bg-slate-600 hover:bg-slate-700 text-white font-bold py-2 rounded hidden">
-                    Stop
-                </button>
-            </div>
-        </div>
-
-        <div id="status" class="mt-6 text-center text-slate-400 text-sm italic">
-            Ready to train?
-        </div>
-    </div>
-
-    <script>
-        let timer = null;
-        const synth = window.speechSynthesis;
-
-        const skillInput = document.getElementById('skillInput');
-        const intervalInput = document.getElementById('intervalInput');
-        const startBtn = document.getElementById('startBtn');
-        const stopBtn = document.getElementById('stopBtn');
-        const status = document.getElementById('status');
-
-        function speak(text) {
-            if (synth.speaking) synth.cancel(); // Stop current speech if it's overlapping
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.rate = 0.9; // Slightly slower for clarity during gaming
-            synth.speak(utterance);
-        }
-
-        startBtn.onclick = () => {
-            const skill = skillInput.value || "your focus";
-            const timeValueMs = parseInt(intervalInput.value) * 1000;
-
-            status.innerText = `Active: Focusing on ${skill}`;
-            startBtn.classList.add('hidden');
-            stopBtn.classList.remove('hidden');
-
-            // Immediate first reminder
-            speak(`Session started. Focus on ${skill}`);
-
-            timer = setInterval(() => {
-                speak(`Reminder: ${skill}`);
-            }, timeValueMs);
-        };
-
-        stopBtn.onclick = () => {
-            clearInterval(timer);
-            status.innerText = "Session stopped.";
-            startBtn.classList.remove('hidden');
-            stopBtn.classList.add('hidden');
-            synth.cancel();
-        };
-    </script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ow-intentionality</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>
