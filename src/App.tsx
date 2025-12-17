@@ -42,7 +42,6 @@ function App() {
       <div className='w-full max-w-md bg-slate-800 rounded-2xl border border-slate-700 shadow-2xl p-8'>
         <header className='flex justify-between items-center mb-8'>
           <h2 className='text-2xl font-bold text-white uppercase italic tracking-tighter'>Intentionality</h2>
-          <button onClick={addSkill} className='px-3 py-1 bg-emerald-600 text-white text-[10px] font-bold uppercase rounded-lg'>+ New</button>
         </header>
 
         <main className='space-y-6'>
@@ -55,7 +54,8 @@ function App() {
             )}
             <button 
               onClick={toggleTimer}
-              className={`w-full py-4 rounded-xl font-black uppercase text-white ${isActive ? 'bg-slate-700' : 'bg-orange-600'}`}
+              className={`w-full py-4 rounded-xl font-black uppercase
+                ${isActive ? 'text-red-100 bg-red-700 hover:bg-red-600' : 'text-orange-100 bg-orange-700 hover:bg-orange-600'}`}
             >
               {isActive ? 'Stop' : 'Start'}
             </button>
@@ -77,6 +77,7 @@ function App() {
             skills={skills} 
             activeId={activeSkill.id} 
             onSelect={(s) => !isActive && setActiveSkill(s)} 
+            onAdd={addSkill}
           />
         </main>
       </div>

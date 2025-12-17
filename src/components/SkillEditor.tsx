@@ -25,13 +25,13 @@ export const SkillEditor = ({ skill, isActive, onUpdate, onSave, onDelete }: Ski
     <button 
       onClick={onSave}
       disabled={isActive}
-      className='w-full py-2 border-2 border-slate-700 hover:border-emerald-600 text-slate-400 hover:text-emerald-500 font-bold uppercase text-xs rounded-xl transition-all disabled:opacity-50'
+      className='w-full text-emerald-200/70 uppercase font-bold transition-all hover:text-emerald-500 disabled:opacity-50'
     >
       Save Changes to List
     </button>
     <button 
       onClick={onDelete}
-      className='w-full text-[10px] text-slate-600 hover:text-red-500 uppercase font-bold transition-colors'
+      className='w-full text-red-200/70 uppercase font-bold transition-all hover:text-red-400/80 disabled:opacity-50'
     >
       Delete Selected Skill
     </button>
