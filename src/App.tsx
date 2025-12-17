@@ -1,113 +1,62 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
+import { useTimer } from './hooks/useTimer';
+import { InputGroup } from './components/InputGroup';
 
 function App() {
-  // --- State ---
-  const [skill, setSkill] = useState<string>('Angles');
-  const [intervalTime, setIntervalTime] = useState<number>(60);
-  const [isActive, setIsActive] = useState<boolean>(false);
-  const [timeLeft, setTimeLeft] = useState<number>(intervalTime);
+  const [skill, setSkill] = useState('Angles');
+  const [intervalTime, setIntervalTime] = useState(60);
 
-  // --- Refs (to keep track of the timer and speech without re-renders) ---
-  const timerRef = useRef<number | null>(null);
-  const synth = window.speechSynthesis;
-
-  // --- Speech Function ---
-  const speak = (text: string) => {
-    if (synth.speaking) synth.cancel(); // Stop current speech to stay synced
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 0.9; 
-    synth.speak(utterance);
-  };
-
-  // --- Timer Logic ---
-  useEffect(() => {
-    if (isActive && timeLeft > 0) {
-      // Countdown every second
-      timerRef.current = window.setInterval(() => {
-        setTimeLeft((prev) => prev - 1);
-      }, 1000);
-    } else if (timeLeft === 0) {
-      // Trigger the "Poke" and Reset
-      speak(`Reminder: ${skill}`);
-      setTimeLeft(intervalTime);
-    }
-
-    // Cleanup: This stops the timer if the component unmounts or isActive changes
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, [isActive, timeLeft, skill, intervalTime]);
-
-  const toggleSession = () => {
-    if (!isActive) {
-      setTimeLeft(intervalTime);
-      speak(`Starting session. Focus on ${skill}`);
-    } else {
-      synth.cancel();
-    }
-    setIsActive(!isActive);
-  };
+  const { isActive, timeLeft, toggleTimer } = useTimer({ skill, intervalTime });
 
   return (
     <div className="h-screen w-screen bg-slate-900 flex items-center justify-center p-4">
       <div className="w-full max-w-md bg-slate-800 rounded-2xl border border-slate-700 shadow-2xl p-8">
         
-        {/* Header */}
-        <div className="mb-8 text-center">
-          <h2 className="text-3xl font-bold text-white uppercase italic">Intentionality</h2>
-        </div>
+        <header className="mb-8 text-center">
+          <h2 className="text-3xl font-bold text-white uppercase italic tracking-tighter">
+            Intentionality <span className="text-orange-500 not-italic text-sm ml-2">v0.1</span>
+          </h2>
+        </header>
 
-        {/* Inputs */}
-        <div className="space-y-6">
-          <div className="flex flex-col gap-2">
-            <label className="text-xs font-bold text-slate-400 uppercase">Focus Skill</label>
-            <input 
-              type="text" 
-              value={skill}
-              onChange={(e) => setSkill(e.target.value)}
-              disabled={isActive}
-              className="bg-slate-950 border border-slate-700 rounded-lg p-3 text-white focus:border-orange-500 outline-none disabled:opacity-50 transition"
-              placeholder="e.g. Ult Tracking"
-            />
-          </div>
+        <main className="space-y-6">
+          <InputGroup 
+            label="Focus Skill" 
+            value={skill} 
+            disabled={isActive} 
+            onChange={setSkill} 
+          />
 
-          <div className="flex flex-col gap-2">
-            <label className="text-xs font-bold text-slate-400 uppercase">Interval (Seconds)</label>
-            <input 
-              type="number" 
-              value={intervalTime}
-              onChange={(e) => {
-                const val = parseInt(e.target.value);
-                setIntervalTime(val);
-                if (!isActive) setTimeLeft(val);
-              }}
-              disabled={isActive}
-              className="bg-slate-950 border border-slate-700 rounded-lg p-3 text-white focus:border-orange-500 outline-none disabled:opacity-50 transition"
-            />
-          </div>
+          <InputGroup 
+            label="Interval (Seconds)" 
+            type="number" 
+            value={intervalTime} 
+            disabled={isActive} 
+            onChange={(val) => setIntervalTime(parseInt(val) || 0)} 
+          />
 
-          {/* Visualization of Timer */}
           {isActive && (
-            <div className="text-center py-4">
-              <div className="text-5xl font-mono font-bold text-orange-500 mb-2">
-                {timeLeft}s
+            <div className="text-center py-4 bg-slate-900/50 rounded-xl border border-slate-700/50">
+              <div className="text-6xl font-mono font-black text-orange-500 drop-shadow-[0_0_10px_rgba(234,88,12,0.3)]">
+                {timeLeft}<span className="text-2xl">s</span>
               </div>
-              <p className="text-xs text-slate-500 uppercase animate-pulse">Session Active</p>
+              <p className="text-[10px] text-slate-500 uppercase tracking-[0.3em] mt-2 animate-pulse">
+                Session Active
+              </p>
             </div>
           )}
-
-          {/* Action Button */}
           <button 
-            onClick={toggleSession}
-            className={`w-full py-4 rounded-xl font-black uppercase tracking-wider transition-all transform active:scale-95 ${
-              isActive 
-              ? 'bg-slate-700 hover:bg-red-600 text-white' 
-              : 'bg-orange-600 hover:bg-orange-500 text-white shadow-[0_0_20px_rgba(234,88,12,0.4)]'
-            }`}
+            onClick={toggleTimer}
+            className={`w-full py-4 rounded-xl font-black uppercase tracking-widest transition-all transform active:scale-[0.98] text-white 
+              ${
+                isActive 
+                ? 'bg-slate-700 hover:bg-red-800' 
+                : 'bg-orange-600 hover:bg-orange-500 shadow-2xl shadow-orange-900/20'
+              }
+            `}
           >
-            {isActive ? 'Stop Training' : 'Initialize Session'}
+            {isActive ? 'Stop' : 'Start'}
           </button>
-        </div>
+        </main>
       </div>
     </div>
   );
