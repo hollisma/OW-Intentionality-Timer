@@ -15,8 +15,8 @@
 * [x] Skill presets with common skills
 
 ## V0.3: Local Storage
-* [ ] Store skills in local storage
-* [ ] Add functionality to reset skills to default
+* [x] Store skills in local storage
+* [x] Add functionality to reset skills to default
 
 ## V1.0: Data > Private
 * [ ] Login system to store skills and progress data

@@ -81,5 +81,16 @@ export const useSkills = (storage: SkillStorage, initialData: Skill[]) => {
     }
   };
 
-  return { skills, activeSkill, setActiveSkill, addSkill, saveSkill, deleteSkill, isLoading };
+  const resetSkills = async () => {
+    setSkills(initialData);
+    setActiveSkill(initialData[0]);
+    
+    try {
+      await storage.saveAll(initialData);
+    } catch (error) {
+      console.error('Error resetting skills:', error);
+    }
+  };
+
+  return { skills, activeSkill, setActiveSkill, addSkill, saveSkill, deleteSkill, resetSkills, isLoading };
 };
