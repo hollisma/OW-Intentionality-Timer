@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import type { Skill } from '../types/Skill';
 import { SkillListCard } from './SkillListCard';
 
@@ -6,9 +7,33 @@ interface SkillListProps {
   activeId: string; 
   onSelect: (skill: Skill) => void;
   onAdd: () => void;
+  onReorder: (startIndex: number, endIndex: number) => void;
 }
 
-export const SkillList = ({ skills, activeId, onSelect, onAdd }: SkillListProps) => {
+export const SkillList = ({ skills, activeId, onSelect, onAdd, onReorder }: SkillListProps) => {
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+
+  const handleDragStart = (index: number) => {
+    setDraggedIndex(index);
+  };
+
+  const handleDragOver = (index: number) => {
+    if (draggedIndex === null) return;
+    
+    if (index !== draggedIndex) {
+      setDragOverIndex(index);
+    }
+  };
+
+  const handleDragEnd = () => {
+    if (draggedIndex !== null && dragOverIndex !== null && draggedIndex !== dragOverIndex) {
+      onReorder(draggedIndex, dragOverIndex);
+    }
+    setDraggedIndex(null);
+    setDragOverIndex(null);
+  };
+
   return (
     <div className="flex flex-col gap-3">
       <div className="flex justify-between items-center">
@@ -25,13 +50,21 @@ export const SkillList = ({ skills, activeId, onSelect, onAdd }: SkillListProps)
       
       {/* Skill Cards */}
       <div className='flex flex-col gap-3'>
-        {skills.map((skill) => (
-          <SkillListCard
+        {skills.map((skill, index) => (
+          <div
             key={skill.id}
-            skill={skill}
-            isActive={activeId === skill.id}
-            onSelect={onSelect}
-          />
+            className={dragOverIndex === index && draggedIndex !== index ? 'opacity-50' : ''}
+          >
+            <SkillListCard
+              skill={skill}
+              isActive={activeId === skill.id}
+              index={index}
+              onSelect={onSelect}
+              onDragStart={handleDragStart}
+              onDragOver={handleDragOver}
+              onDragEnd={handleDragEnd}
+            />
+          </div>
         ))}
       </div>
     </div>

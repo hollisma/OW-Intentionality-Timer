@@ -92,5 +92,12 @@ export const useSkills = (storage: SkillStorage, initialData: Skill[]) => {
     }
   };
 
-  return { skills, activeSkill, setActiveSkill, addSkill, saveSkill, deleteSkill, resetSkills, isLoading };
+  const reorderSkill = (startIndex: number, endIndex: number) => {
+    const result = Array.from(skills);
+    const [removed] = result.splice(startIndex, 1);
+    result.splice(endIndex, 0, removed);
+    setSkills(result);
+  };
+
+  return { skills, activeSkill, setActiveSkill, addSkill, saveSkill, deleteSkill, resetSkills, reorderSkill, isLoading };
 };

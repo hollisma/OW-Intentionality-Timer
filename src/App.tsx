@@ -32,7 +32,7 @@ const INITIAL_SKILLS: Skill[] = [
 const storage = new LocalStorageSkillStorage();
 
 function App() {
-  const { skills, activeSkill, setActiveSkill, addSkill, saveSkill, deleteSkill, resetSkills } = useSkills(storage, INITIAL_SKILLS);
+  const { skills, activeSkill, setActiveSkill, addSkill, saveSkill, deleteSkill, resetSkills, reorderSkill } = useSkills(storage, INITIAL_SKILLS);
   const { isActive, timeLeft, toggleTimer } = useTimer({ 
     skill: activeSkill.tts, 
     intervalTime: activeSkill.interval, 
@@ -80,6 +80,7 @@ function App() {
             activeId={activeSkill.id} 
             onSelect={(s) => !isActive && setActiveSkill(s)} 
             onAdd={addSkill}
+            onReorder={(startIndex, endIndex) => !isActive && reorderSkill(startIndex, endIndex)}
           />
           
           <button
