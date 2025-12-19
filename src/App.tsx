@@ -3,6 +3,7 @@ import { useTimer } from './hooks/useTimer';
 import { SkillList } from './components/SkillList';
 import { SkillEditor } from './components/SkillEditor';
 import { type Skill } from './types/Skill';
+import { LocalStorageSkillStorage } from './storage/LocalStorageSkillStorage';
 
 const INITIAL_SKILLS: Skill[] = [
 	{
@@ -28,8 +29,10 @@ const INITIAL_SKILLS: Skill[] = [
 	},
 ]
 
+const storage = new LocalStorageSkillStorage();
+
 function App() {
-  const { skills, activeSkill, setActiveSkill, addSkill, saveSkill, deleteSkill } = useSkills(INITIAL_SKILLS);
+  const { skills, activeSkill, setActiveSkill, addSkill, saveSkill, deleteSkill } = useSkills(storage, INITIAL_SKILLS);
   const { isActive, timeLeft, toggleTimer } = useTimer({ 
     skill: activeSkill.tts, 
     intervalTime: activeSkill.interval, 
