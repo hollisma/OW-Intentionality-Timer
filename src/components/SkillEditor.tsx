@@ -14,7 +14,7 @@ export const SkillEditor = ({ skill, isActive, onUpdate, onSave, onDelete }: Ski
     <InputGroup 
       label='Skill Name' 
       value={skill.name} 
-      onChange={(val) => onUpdate({ name: val, tts: `Focus: ${val}` })} 
+      onChange={(val) => onUpdate({ name: val, tts: `${val}` })} 
     />
     <InputGroup 
       label='Interval (Seconds)' 

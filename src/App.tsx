@@ -1,7 +1,5 @@
-import { useState } from 'react';
 import { useSkills } from './hooks/useSkills';
 import { useTimer } from './hooks/useTimer';
-import { InputGroup } from './components/InputGroup';
 import { SkillList } from './components/SkillList';
 import { SkillEditor } from './components/SkillEditor';
 import { type Skill } from './types/Skill';
