@@ -12,7 +12,7 @@ interface SkillEditorProps {
 export const SkillEditor = ({ skill, isActive, onUpdate, onSave, onDelete }: SkillEditorProps) => (
   <div className='space-y-4'>
     <InputGroup 
-      label='Skill Name' 
+      label='Skill Name (TTS)' 
       value={skill.name} 
       onChange={(val) => onUpdate({ name: val, tts: `${val}` })} 
     />
@@ -21,6 +21,11 @@ export const SkillEditor = ({ skill, isActive, onUpdate, onSave, onDelete }: Ski
       type='number' 
       value={skill.interval} 
       onChange={(val) => onUpdate({ interval: parseInt(val) || 0 })} 
+    />
+    <InputGroup 
+      label='Description' 
+      value={skill.description} 
+      onChange={(val) => onUpdate({ description: val })} 
     />
     <button 
       onClick={onSave}
