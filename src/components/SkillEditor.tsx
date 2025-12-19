@@ -30,13 +30,13 @@ export const SkillEditor = ({ skill, isActive, isInList, onUpdate, onSave, onDel
     />
     <button 
       onClick={onSave}
-      disabled={isActive}
       className='w-full text-emerald-200/70 uppercase font-bold transition-all hover:text-emerald-500 disabled:opacity-50'
     >
       {isInList ? 'Save Changes' : 'Add to List'}
     </button>
     <button 
       onClick={onDelete}
+      disabled={isActive}
       className='w-full text-red-200/70 uppercase font-bold transition-all hover:text-red-400/80 disabled:opacity-50'
     >
       Delete Selected Skill
