@@ -18,13 +18,22 @@ export const useSkills = (initialData: Skill[]) => {
   };
 
   const saveSkill = (updatedSkill: Skill) => {
-    setSkills(prev => prev.map(s => s.id === updatedSkill.id ? updatedSkill : s));
+    setSkills(prev => {
+      const exists = prev.some(s => s.id === updatedSkill.id);
+      if (exists) {
+        return prev.map(s => s.id === updatedSkill.id ? updatedSkill : s);
+      } else {
+        return [updatedSkill, ...prev];
+      }
+    });
   };
 
   const deleteSkill = (id: string) => {
     const filtered = skills.filter(s => s.id !== id);
     setSkills(filtered);
-    if (activeSkill.id === id) setActiveSkill(filtered[0] || initialData[0]);
+    if (activeSkill.id === id && filtered.length > 0) {
+      setActiveSkill(filtered[0]);
+    }
   };
 
   return { skills, activeSkill, setActiveSkill, addSkill, saveSkill, deleteSkill };

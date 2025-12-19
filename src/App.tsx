@@ -63,6 +63,7 @@ function App() {
           <SkillEditor 
             skill={activeSkill} 
             isActive={isActive}
+            isInList={skills.some(s => s.id === activeSkill.id)}
             onUpdate={(updates) => setActiveSkill((prev: Skill) => ({ ...prev, ...updates }))}
             onSave={() => saveSkill(activeSkill)}
             onDelete={() => deleteSkill(activeSkill.id)}
