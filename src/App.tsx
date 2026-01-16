@@ -36,16 +36,19 @@ const settingsStorage = new LocalStorageSettingsStorage();
 
 function App() {
   const [volume, setVolume] = useState<number>(1);
+  const [delay, setDelay] = useState<number>(30);
 
   useEffect(() => {
     settingsStorage.getVolume().then(setVolume);
+    settingsStorage.getDelay().then(setDelay);
   }, []);
 
   const { skills, activeSkill, setActiveSkill, addSkill, saveSkill, deleteSkill, resetSkills, reorderSkill } = useSkills(storage, INITIAL_SKILLS);
-  const { isActive, timeLeft, toggleTimer } = useTimer({ 
+  const { isActive, timeLeft, isDelayPhase, toggleTimer } = useTimer({ 
     skill: activeSkill.tts, 
     intervalTime: activeSkill.interval,
     volume: volume,
+    delay: delay,
   });
 
   return (
@@ -61,6 +64,9 @@ function App() {
             {isActive && (
                <div className="text-center py-8 bg-slate-900/50 rounded-xl mb-4">
                  <div className="text-6xl font-mono font-black text-orange-500">{timeLeft}s</div>
+                 {isDelayPhase && (
+                   <div className="text-sm text-slate-400 mt-2 uppercase tracking-wide">Delay</div>
+                 )}
                </div>
             )}
             <button 
@@ -109,6 +115,29 @@ function App() {
               <span className="text-slate-300 font-mono text-sm w-12 text-right">
                 {Math.round(volume * 100)}%
               </span>
+            </div>
+          </div>
+
+          {/* Delay Input */}
+          <div className="space-y-2">
+            <label className="text-slate-400 font-bold uppercase text-sm tracking-[0.2em] block">
+              Delay (seconds)
+            </label>
+            <div className="flex items-center gap-4">
+              <input
+                type="number"
+                min="0"
+                max="300"
+                step="1"
+                value={delay}
+                onChange={(e) => {
+                  const newDelay = parseInt(e.target.value, 10) || 0;
+                  setDelay(newDelay);
+                  settingsStorage.setDelay(newDelay);
+                }}
+                disabled={isActive}
+                className="flex-1 px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-slate-300 font-mono disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-orange-500"
+              />
             </div>
           </div>
 
