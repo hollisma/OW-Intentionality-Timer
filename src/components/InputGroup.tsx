@@ -1,16 +1,36 @@
 import { InputGroupNumber } from './InputGroupNumber';
+import { InputGroupSlider } from './InputGroupSlider';
 
 interface InputGroupProps {
   label: string;
   value: string | number;
   type?: string;
+  min?: number;
+  max?: number;
+  step?: number;
   disabled?: boolean;
   onChange: (val: string) => void;
+  formatValue?: (value: number) => string;
 }
 
-export const InputGroup = ({ label, value, type = 'text', disabled, onChange }: InputGroupProps) => {
+export const InputGroup = ({ label, value, type = 'text', min, max, step, disabled, onChange, formatValue }: InputGroupProps) => {
   if (type === 'number') {
     return <InputGroupNumber label={label} value={value} disabled={disabled} onChange={onChange} />;
+  }
+
+  if (type === 'slider') {
+    return (
+      <InputGroupSlider 
+        label={label} 
+        value={typeof value === 'number' ? value : parseFloat(value) || 0} 
+        min={min}
+        max={max}
+        step={step}
+        disabled={disabled} 
+        onChange={onChange}
+        formatValue={formatValue}
+      />
+    );
   }
 
   return (
