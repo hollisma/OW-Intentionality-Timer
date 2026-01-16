@@ -25,6 +25,7 @@ export const SkillEditor = ({ skill, isActive, isInList, onUpdate, onSave, onDel
     />
     <InputGroup 
       label='Description' 
+      type='textarea'
       value={skill.description} 
       onChange={(val) => onUpdate({ description: val })} 
     />
