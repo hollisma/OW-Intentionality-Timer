@@ -1,9 +1,11 @@
+import { useState, useEffect } from 'react';
 import { useSkills } from './hooks/useSkills';
 import { useTimer } from './hooks/useTimer';
 import { SkillList } from './components/SkillList';
 import { SkillEditor } from './components/SkillEditor';
 import { type Skill } from './types/Skill';
 import { LocalStorageSkillStorage } from './storage/LocalStorageSkillStorage';
+import { LocalStorageSettingsStorage } from './storage/LocalStorageSettingsStorage';
 
 const INITIAL_SKILLS: Skill[] = [
 	{
@@ -30,12 +32,20 @@ const INITIAL_SKILLS: Skill[] = [
 ]
 
 const storage = new LocalStorageSkillStorage();
+const settingsStorage = new LocalStorageSettingsStorage();
 
 function App() {
+  const [volume, setVolume] = useState<number>(1);
+
+  useEffect(() => {
+    settingsStorage.getVolume().then(setVolume);
+  }, []);
+
   const { skills, activeSkill, setActiveSkill, addSkill, saveSkill, deleteSkill, resetSkills, reorderSkill } = useSkills(storage, INITIAL_SKILLS);
   const { isActive, timeLeft, toggleTimer } = useTimer({ 
     skill: activeSkill.tts, 
-    intervalTime: activeSkill.interval, 
+    intervalTime: activeSkill.interval,
+    volume: volume,
   });
 
   return (
@@ -46,7 +56,7 @@ function App() {
         </header>
 
         <main className='space-y-6'>
-          {/* 1. Timer Display Section */}
+          {/* Timer Display Section */}
           <section>
             {isActive && (
                <div className="text-center py-8 bg-slate-900/50 rounded-xl mb-4">
@@ -62,7 +72,7 @@ function App() {
             </button>
           </section>
 
-          {/* 2. Editor Section */}
+          {/* Editor Section */}
           <SkillEditor 
             skill={activeSkill} 
             isActive={isActive}
@@ -74,7 +84,37 @@ function App() {
 
           <hr className="border-slate-700" />
 
-          {/* 3. Navigation Section */}
+          {/* Volume Slider */}
+          <div className="space-y-2">
+            <label className="text-slate-400 font-bold uppercase text-sm tracking-[0.2em] block">
+              Volume
+            </label>
+            <div className="flex items-center gap-4">
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.01"
+                value={volume}
+                onChange={(e) => {
+                  const newVolume = parseFloat(e.target.value);
+                  setVolume(newVolume);
+                  settingsStorage.setVolume(newVolume);
+                }}
+                className="flex-1 h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-orange-500"
+                style={{
+                  background: `linear-gradient(to right, rgb(249 115 22) 0%, rgb(249 115 22) ${volume * 100}%, rgb(51 65 85) ${volume * 100}%, rgb(51 65 85) 100%)`
+                }}
+              />
+              <span className="text-slate-300 font-mono text-sm w-12 text-right">
+                {Math.round(volume * 100)}%
+              </span>
+            </div>
+          </div>
+
+          <hr className="border-slate-700" />
+
+          {/* Navigation Section */}
           <SkillList 
             skills={skills} 
             activeId={activeSkill.id} 

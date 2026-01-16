@@ -3,9 +3,10 @@ import { useState, useEffect, useRef } from 'react';
 interface TimerProps {
   skill: string;
   intervalTime: number;
+  volume?: number;
 }
 
-export const useTimer = ({ skill, intervalTime }: TimerProps) => {
+export const useTimer = ({ skill, intervalTime, volume = 1 }: TimerProps) => {
   const [isActive, setIsActive] = useState(false);
   const [timeLeft, setTimeLeft] = useState(intervalTime);
   const timerRef = useRef<number | null>(null);
@@ -14,6 +15,7 @@ export const useTimer = ({ skill, intervalTime }: TimerProps) => {
     if (window.speechSynthesis.speaking) window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.rate = 0.9;
+    utterance.volume = volume;
     window.speechSynthesis.speak(utterance);
   };
 
@@ -23,14 +25,14 @@ export const useTimer = ({ skill, intervalTime }: TimerProps) => {
         setTimeLeft((prev) => prev - 1);
       }, 1000);
     } else if (timeLeft === 0) {
-      speak(`Reminder: ${skill}`);
+      speak(`${skill}`);
       setTimeLeft(intervalTime);
     }
 
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [isActive, timeLeft, skill, intervalTime]);
+  }, [isActive, timeLeft, skill, intervalTime, volume]);
 
   const toggleTimer = () => {
     if (!isActive) {
