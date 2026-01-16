@@ -4,13 +4,11 @@ import { InputGroup } from './InputGroup';
 interface SkillEditorProps {
   skill: Skill;
   isActive: boolean;
-  isInList: boolean;
   onUpdate: (updates: Partial<Skill>) => void;
-  onSave: () => void;
   onDelete: () => void;
 }
 
-export const SkillEditor = ({ skill, isActive, isInList, onUpdate, onSave, onDelete }: SkillEditorProps) => (
+export const SkillEditor = ({ skill, isActive, onUpdate, onDelete }: SkillEditorProps) => (
   <div className='space-y-4'>
     <InputGroup 
       label='Skill Name (TTS)' 
@@ -29,12 +27,6 @@ export const SkillEditor = ({ skill, isActive, isInList, onUpdate, onSave, onDel
       value={skill.description} 
       onChange={(val) => onUpdate({ description: val })} 
     />
-    <button 
-      onClick={onSave}
-      className='w-full text-emerald-200/70 uppercase font-bold transition-all hover:text-emerald-500 disabled:opacity-50'
-    >
-      {isInList ? 'Save Changes' : 'Add to List'}
-    </button>
     <button 
       onClick={onDelete}
       disabled={isActive}

@@ -24,7 +24,7 @@ export const SkillListCard = ({ skill, isActive, index, onSelect, onDragStart, o
         onDragOver(index);
       }}
       onDragEnd={onDragEnd}
-      className={`group flex items-center gap-1 rounded-xl border-2 transition-all ${
+      className={`group flex items-center rounded-xl border-2 transition-all ${
         isActive 
           ? 'border-orange-500 bg-orange-500/10 shadow-[0_0_15px_rgba(234,88,12,0.1)]' 
           : 'border-slate-800 bg-slate-900/50 hover:border-slate-700'
@@ -32,7 +32,7 @@ export const SkillListCard = ({ skill, isActive, index, onSelect, onDragStart, o
     >
       {/* Drag Handle */}
       <div 
-        className='cursor-grab active:cursor-grabbing pl-2 flex-shrink-0'
+        className='cursor-grab active:cursor-grabbing pl-3 flex-shrink-0'
         onClick={(e) => e.stopPropagation()}
       >
         <svg 

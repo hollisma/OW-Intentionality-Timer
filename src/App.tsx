@@ -83,9 +83,14 @@ function App() {
           <SkillEditor 
             skill={activeSkill} 
             isActive={isActive}
-            isInList={skills.some(s => s.id === activeSkill.id)}
-            onUpdate={(updates) => setActiveSkill((prev: Skill) => ({ ...prev, ...updates }))}
-            onSave={() => saveSkill(activeSkill)}
+            onUpdate={(updates) => {
+              const updatedSkill = { ...activeSkill, ...updates };
+              setActiveSkill(updatedSkill);
+              // Auto-save if skill is already in the list
+              if (skills.some(s => s.id === activeSkill.id)) {
+                saveSkill(updatedSkill);
+              }
+            }}
             onDelete={() => deleteSkill(activeSkill.id)}
           />
 
@@ -117,7 +122,7 @@ function App() {
             disabled={isActive}
             className='w-full text-slate-400/70 uppercase font-bold transition-all hover:text-slate-300 disabled:opacity-50 text-sm'
           >
-            Reset
+            Reset All
           </button>
         </main>
       </div>
