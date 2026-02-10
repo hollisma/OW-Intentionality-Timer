@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useCallback } from 'react';
 import { useTimer } from './hooks/useTimer';
 import { SkillList } from './components/SkillList';
 import { SkillEditor } from './components/SkillEditor';
@@ -6,40 +6,29 @@ import { Settings } from './components/Settings';
 import { SkillFiltersPanel } from './components/SkillFiltersPanel';
 import { LocalStorageSettingsStorage } from './storage/LocalStorageSettingsStorage';
 import { useSkillStore } from './hooks/useSkillStore';
-import { filterAndSortSkills, type SkillSortKey } from './logic/skillSelectors';
-import type { RoleId, HeroId } from './types/Skill';
+import { useSkillFilters } from './hooks/useSkillFilters';
+import { useSkillReorder } from './hooks/useSkillReorder';
+import { useSettings } from './hooks/useSettings';
 
 const settingsStorage = new LocalStorageSettingsStorage();
 
 function App() {
-  const [volume, setVolume] = useState<number>(1);
-  const [delay, setDelay] = useState<number>(30);
-  
-  // Filter and sort state
-  const [selectedRoleIds, setSelectedRoleIds] = useState<RoleId[]>([]);
-  const [selectedHeroIds, setSelectedHeroIds] = useState<HeroId[]>([]);
-  const [sortBy, setSortBy] = useState<SkillSortKey>('name');
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
-
-  useEffect(() => {
-    settingsStorage.getVolume().then(setVolume);
-    settingsStorage.getDelay().then(setDelay);
-  }, []);
-
+  const { volume, delay, setVolume, setDelay } = useSettings(settingsStorage);
   const { skills, activeSkill, setActiveSkill, addSkill, saveSkill, deleteSkill, resetSkills, reorderSkill } = useSkillStore();
   
-  // Filter and sort skills (memoized for performance)
-  const filteredAndSortedSkills = useMemo(() => {
-    return filterAndSortSkills(
-      skills,
-      {
-        roleIds: selectedRoleIds.length > 0 ? selectedRoleIds : undefined,
-        heroIds: selectedHeroIds.length > 0 ? selectedHeroIds : undefined,
-      },
-      sortBy,
-      sortDirection
-    );
-  }, [skills, selectedRoleIds, selectedHeroIds, sortBy, sortDirection]);
+  const {
+    selectedRoleIds,
+    selectedHeroIds,
+    sortBy,
+    sortDirection,
+    filteredAndSortedSkills,
+    setSelectedRoleIds,
+    setSelectedHeroIds,
+    handleSortChange,
+  } = useSkillFilters(skills);
+
+  const hasActiveFilters = selectedRoleIds.length > 0 || selectedHeroIds.length > 0;
+  const handleReorder = useSkillReorder(skills, filteredAndSortedSkills, reorderSkill, hasActiveFilters);
 
   // Safety check: if no active skill, don't render timer (app should remain functional)
   const hasActiveSkill = activeSkill && skills.length > 0;
@@ -130,10 +119,7 @@ function App() {
             sortDirection={sortDirection}
             onRoleFilterChange={setSelectedRoleIds}
             onHeroFilterChange={setSelectedHeroIds}
-            onSortChange={(newSortBy, newDirection) => {
-              setSortBy(newSortBy);
-              setSortDirection(newDirection);
-            }}
+            onSortChange={handleSortChange}
           />
 
           <hr className="border-slate-700" />
@@ -144,21 +130,7 @@ function App() {
             activeId={hasActiveSkill ? activeSkill.id : ''} 
             onSelect={(s) => !isActive && setActiveSkill(s)} 
             onAdd={addSkill}
-            onReorder={(startIndex, endIndex) => {
-              // Only allow reordering if no filters are active (to avoid index mismatches)
-              if (selectedRoleIds.length === 0 && selectedHeroIds.length === 0 && !isActive) {
-                // Map filtered indices back to original skill IDs, then reorder in full list
-                const draggedSkill = filteredAndSortedSkills[startIndex];
-                const targetSkill = filteredAndSortedSkills[endIndex];
-                if (draggedSkill && targetSkill) {
-                  const draggedIndexInFull = skills.findIndex(s => s.id === draggedSkill.id);
-                  const targetIndexInFull = skills.findIndex(s => s.id === targetSkill.id);
-                  if (draggedIndexInFull >= 0 && targetIndexInFull >= 0) {
-                    reorderSkill(draggedIndexInFull, targetIndexInFull);
-                  }
-                }
-              }
-            }}
+            onReorder={!isActive ? handleReorder : () => {}}
           />
           
           <button
