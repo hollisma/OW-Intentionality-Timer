@@ -1,38 +1,10 @@
 import { useState, useEffect } from 'react';
-import { useSkills } from './hooks/useSkills';
 import { useTimer } from './hooks/useTimer';
 import { SkillList } from './components/SkillList';
 import { SkillEditor } from './components/SkillEditor';
 import { Settings } from './components/Settings';
-import { type Skill } from './types/Skill';
-import { LocalStorageSkillStorage } from './storage/LocalStorageSkillStorage';
 import { LocalStorageSettingsStorage } from './storage/LocalStorageSettingsStorage';
-
-const INITIAL_SKILLS: Skill[] = [
-	{
-		id: 'off-angle', 
-		name: 'Off Angle', 
-		description: 'Use off angles to seprarate enemy resources', 
-		tts: 'off angles', 
-		interval: 20, 
-	},
-	{
-		id: 'target-priority', 
-		name: 'Target Priority', 
-		description: 'Focus squishies, not the tank', 
-		tts: 'target priority', 
-		interval: 30, 
-	},
-	{
-		id: 'ult-tracking', 
-		name: 'Ult Tracking', 
-		description: 'Think of what ults the enemy has', 
-		tts: 'ult tracking', 
-		interval: 45, 
-	},
-]
-
-const storage = new LocalStorageSkillStorage();
+import { useSkillStore } from './hooks/useSkillStore';
 const settingsStorage = new LocalStorageSettingsStorage();
 
 function App() {
@@ -44,7 +16,7 @@ function App() {
     settingsStorage.getDelay().then(setDelay);
   }, []);
 
-  const { skills, activeSkill, setActiveSkill, addSkill, saveSkill, deleteSkill, resetSkills, reorderSkill } = useSkills(storage, INITIAL_SKILLS);
+  const { skills, activeSkill, setActiveSkill, addSkill, saveSkill, deleteSkill, resetSkills, reorderSkill } = useSkillStore();
   const { isActive, timeLeft, isDelayPhase, toggleTimer } = useTimer({ 
     skill: activeSkill.tts, 
     intervalTime: activeSkill.interval,

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { type Skill } from '../types/Skill';
 import { type SkillStorage } from '../storage/SkillStorage';
+import { createSkillWithDefaults } from '../logic/skillDefaults';
 
 export const useSkills = (storage: SkillStorage, initialData: Skill[]) => {
   const [skills, setSkills] = useState<Skill[]>(initialData);
@@ -12,9 +13,11 @@ export const useSkills = (storage: SkillStorage, initialData: Skill[]) => {
     const loadSkills = async () => {
       try {
         const storedSkills = await storage.getAll();
-        if (storedSkills.length > 0) {
+        const visibleSkills = storedSkills.filter(s => !s.isArchived);
+
+        if (visibleSkills.length > 0) {
           setSkills(storedSkills);
-          setActiveSkill(storedSkills[0]);
+          setActiveSkill(visibleSkills[0]);
         } else {
           // If no stored skills, use initial data and save it
           setSkills(initialData);
@@ -44,40 +47,47 @@ export const useSkills = (storage: SkillStorage, initialData: Skill[]) => {
   }, [skills, storage, isLoading]);
 
   const addSkill = () => {
-    const newSkill: Skill = {
-      id: crypto.randomUUID(),
-      name: 'New Focus',
+    const newSkill: Skill = createSkillWithDefaults({
       description: 'New Description',
-      tts: 'New Focus',
-      interval: 60,
-    };
+    });
     setSkills([newSkill, ...skills]);
     setActiveSkill(newSkill);
   };
 
   const saveSkill = (updatedSkill: Skill) => {
+    const withUpdatedTimestamp: Skill = {
+      ...updatedSkill,
+      updatedAt: new Date().toISOString(),
+    };
+
     setSkills(prev => {
-      const exists = prev.some(s => s.id === updatedSkill.id);
+      const exists = prev.some(s => s.id === withUpdatedTimestamp.id);
       if (exists) {
-        return prev.map(s => s.id === updatedSkill.id ? updatedSkill : s);
+        return prev.map(s => s.id === withUpdatedTimestamp.id ? withUpdatedTimestamp : s);
       } else {
-        return [updatedSkill, ...prev];
+        return [withUpdatedTimestamp, ...prev];
       }
     });
   };
 
   const deleteSkill = async (id: string) => {
-    const filtered = skills.filter(s => s.id !== id);
-    setSkills(filtered);
-    
+    const now = new Date().toISOString();
+    const archivedSkills = skills.map(s =>
+      s.id === id ? { ...s, isArchived: true, updatedAt: now } : s
+    );
+    setSkills(archivedSkills);
+
     try {
       await storage.delete(id);
     } catch (error) {
       console.error('Error deleting skill:', error);
     }
-    
-    if (activeSkill.id === id && filtered.length > 0) {
-      setActiveSkill(filtered[0]);
+
+    if (activeSkill.id === id) {
+      const nextActive = archivedSkills.find(s => !s.isArchived);
+      if (nextActive) {
+        setActiveSkill(nextActive);
+      }
     }
   };
 
@@ -99,5 +109,7 @@ export const useSkills = (storage: SkillStorage, initialData: Skill[]) => {
     setSkills(result);
   };
 
-  return { skills, activeSkill, setActiveSkill, addSkill, saveSkill, deleteSkill, resetSkills, reorderSkill, isLoading };
+  const visibleSkills = skills.filter(s => !s.isArchived);
+
+  return { skills: visibleSkills, activeSkill, setActiveSkill, addSkill, saveSkill, deleteSkill, resetSkills, reorderSkill, isLoading };
 };
