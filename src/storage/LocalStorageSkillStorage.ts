@@ -18,8 +18,23 @@ export class LocalStorageSkillStorage implements SkillStorage {
       if (!stored) {
         return [];
       }
-      const parsed = JSON.parse(stored) as Partial<Skill>[];
-      return parsed.map(createSkillWithDefaults);
+      const parsed = JSON.parse(stored) as Array<Partial<Skill> & { heroId?: string | null; roleId?: string | null }>;
+      // Migrate old single heroId/roleId to arrays
+      const migrated = parsed.map(skill => {
+        const migratedSkill: Partial<Skill> = { ...skill };
+        // Convert old heroId to heroIds array
+        if ('heroId' in skill && !('heroIds' in skill)) {
+          migratedSkill.heroIds = skill.heroId ? [skill.heroId] : [];
+          delete (migratedSkill as any).heroId;
+        }
+        // Convert old roleId to roleIds array
+        if ('roleId' in skill && !('roleIds' in skill)) {
+          migratedSkill.roleIds = skill.roleId ? [skill.roleId] : [];
+          delete (migratedSkill as any).roleId;
+        }
+        return migratedSkill;
+      });
+      return migrated.map(createSkillWithDefaults);
     } catch (error) {
       console.error('Error loading skills from localStorage:', error);
       return [];

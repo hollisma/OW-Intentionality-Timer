@@ -16,9 +16,9 @@ export interface Skill {
   tts: string;
   interval: number; // in seconds
 
-  // Organization fields
-  heroId: HeroId | null;
-  roleId: RoleId | null;
+  // Organization fields (arrays to support multiple heroes/roles per skill)
+  heroIds: HeroId[];
+  roleIds: RoleId[];
 
   categoryIds: CategoryId[];
   tagIds: TagId[];
