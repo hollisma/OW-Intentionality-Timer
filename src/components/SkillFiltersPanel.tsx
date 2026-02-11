@@ -94,7 +94,7 @@ export const SkillFiltersPanel = ({
             Heroes <span className='text-slate-500 font-normal normal-case'>— {selectedRoleIds.map(r => ROLES.find(role => role.id === r)?.name).join(', ')}</span>
           </label>
           <div className='bg-slate-950/50 border border-slate-700/60 rounded-xl p-2.5'>
-            <div className='flex flex-wrap gap-2'>
+            <div className='flex flex-wrap gap-2 max-h-24 overflow-y-auto overflow-x-hidden scrollbar-app pr-1'>
               {HEROES
                 .filter(hero => selectedRoleIds.includes(hero.roleId))
                 .map(hero => (
@@ -120,7 +120,7 @@ export const SkillFiltersPanel = ({
             Tags
           </label>
           <div className='bg-slate-950/50 border border-slate-700/60 rounded-xl p-2.5'>
-            <div className='flex flex-wrap gap-2'>
+            <div className='flex flex-wrap gap-2 max-h-24 overflow-y-auto overflow-x-hidden scrollbar-app pr-1'>
               {availableTags.map(tag => (
                 <button
                   key={tag}

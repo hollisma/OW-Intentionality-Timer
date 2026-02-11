@@ -41,7 +41,7 @@ export const InputGroup = ({ label, value, type = 'text', min, max, step, disabl
           value={value}
           disabled={disabled}
           onChange={(e) => onChange(e.target.value)}
-          rows={4}
+          rows={3}
           className='bg-slate-950 border border-slate-700 rounded-lg p-3 text-white focus:border-orange-500 outline-none disabled:opacity-50 transition shadow-inner w-full resize-none overflow-y-auto scrollbar-app'
         />
       </div>

@@ -179,7 +179,7 @@ export const SkillEditor = ({ skill, allSkills, isActive, onUpdate, onDelete }: 
           Tags
         </label>
         <div className='relative'>
-          <div className='bg-slate-950/50 border border-slate-700/60 rounded-xl p-2.5 flex flex-wrap gap-2'>
+          <div className='bg-slate-950/50 border border-slate-700/60 rounded-xl p-2.5 flex flex-wrap gap-2 max-h-16 overflow-y-auto overflow-x-hidden scrollbar-app pr-1'>
             {skill.tags.map(tag => (
               <span
                 key={tag}

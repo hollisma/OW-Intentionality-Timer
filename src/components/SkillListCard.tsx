@@ -16,6 +16,18 @@ interface SkillListCardProps {
 export const SkillListCard = ({ skill, isActive, index, onSelect, onDelete, onDragStart, onDragOver, onDragEnd }: SkillListCardProps) => {
   const roleNames = getRoleNames(skill.roleIds);
   const heroNames = getHeroNames(skill.heroIds);
+  const tagNames = skill.tags
+    .filter((tag, i, arr) => arr.findIndex(t => t.toLowerCase() === tag.toLowerCase()) === i)
+    .map(tag => `#${toTagDisplayCase(tag)}`);
+
+  const allChips = [
+    ...roleNames.map(name => ({ label: name, key: `role-${name}` })),
+    ...heroNames.map(name => ({ label: name, key: `hero-${name}` })),
+    ...tagNames.map(name => ({ label: name, key: `tag-${name}` })),
+  ];
+  const maxChips = 5;
+  const visibleChips = allChips.slice(0, maxChips);
+  const remainingCount = allChips.length - maxChips;
 
 	return (
 		<div
@@ -70,49 +82,30 @@ export const SkillListCard = ({ skill, isActive, index, onSelect, onDelete, onDr
                 </span>
               )}
             </div>
-            {(roleNames.length > 0 || heroNames.length > 0 || skill.tags.length > 0) && (
+            {allChips.length > 0 && (
               <div className='flex items-center gap-2 mt-1 flex-wrap'>
-                {roleNames.map(roleName => (
+                {visibleChips.map(({ label, key }) => (
                   <span 
-                    key={roleName}
+                    key={key}
                     className={`text-[10px] px-1.5 py-0.5 rounded uppercase font-bold ${
                       isActive 
                         ? 'bg-orange-500/20 text-orange-300' 
                         : 'bg-slate-700 text-slate-400'
                     }`}
                   >
-                    {roleName}
+                    {label}
                   </span>
                 ))}
-                {heroNames.map(heroName => (
-                  <span 
-                    key={heroName}
-                    className={`text-[10px] px-1.5 py-0.5 rounded uppercase font-bold ${
-                      isActive 
-                        ? 'bg-orange-500/20 text-orange-300' 
-                        : 'bg-slate-700 text-slate-400'
-                    }`}
-                  >
-                    {heroName}
+                {remainingCount > 0 && (
+                  <span className={`text-[10px] px-1.5 py-0.5 rounded uppercase font-bold ${
+                    isActive ? 'bg-orange-500/20 text-orange-300' : 'bg-slate-700/80 text-slate-500'
+                  }`}>
+                    +{remainingCount}
                   </span>
-                ))}
-                {skill.tags
-                  .filter((tag, i, arr) => arr.findIndex(t => t.toLowerCase() === tag.toLowerCase()) === i)
-                  .map(tag => (
-                  <span 
-                    key={tag.toLowerCase()}
-                    className={`text-[10px] px-1.5 py-0.5 rounded uppercase font-bold ${
-                      isActive 
-                        ? 'bg-orange-500/20 text-orange-300' 
-                        : 'bg-slate-700/80 text-slate-400'
-                    }`}
-                  >
-                    #{toTagDisplayCase(tag)}
-                  </span>
-                ))}
+                )}
               </div>
             )}
-            <p className={`text-sm mt-1 leading-relaxed ${
+            <p className={`text-sm mt-1 leading-relaxed line-clamp-2 ${
                 isActive ? 'text-orange-300' : 'text-slate-400'
               }`}>
               {skill.description}
