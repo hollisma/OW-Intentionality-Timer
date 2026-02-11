@@ -14,6 +14,8 @@ interface SkillFiltersPanelProps {
   onHeroFilterChange: (heroIds: HeroId[]) => void;
   onTagToggle: (tag: string) => void;
   onSortChange: (sortBy: SkillSortKey, direction: 'asc' | 'desc') => void;
+  onClearFilters?: () => void;
+  hasActiveFilters?: boolean;
 }
 
 export const SkillFiltersPanel = ({
@@ -27,6 +29,8 @@ export const SkillFiltersPanel = ({
   onHeroFilterChange,
   onTagToggle,
   onSortChange,
+  onClearFilters,
+  hasActiveFilters,
 }: SkillFiltersPanelProps) => {
   const isTagSelected = (tag: string) =>
     selectedTags.some(t => t.toLowerCase() === tag.toLowerCase());
@@ -63,6 +67,15 @@ export const SkillFiltersPanel = ({
         <h3 className='text-slate-400 font-bold uppercase text-sm tracking-[0.2em]'>
           Filters
         </h3>
+        {onClearFilters && (
+          <button
+            onClick={onClearFilters}
+            disabled={!hasActiveFilters}
+            className='text-xs uppercase tracking-wider font-medium transition disabled:text-slate-600 disabled:cursor-default disabled:opacity-70 text-orange-400 hover:text-orange-300 disabled:hover:text-slate-600'
+          >
+            Clear
+          </button>
+        )}
       </div>
 
       {/* Role Filters */}

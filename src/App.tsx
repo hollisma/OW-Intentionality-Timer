@@ -148,6 +148,8 @@ function App() {
                 onHeroFilterChange={setSelectedHeroIds}
                 onTagToggle={toggleTag}
                 onSortChange={handleSortChange}
+                onClearFilters={clearFilters}
+                hasActiveFilters={hasActiveFilters}
               />
 
               <hr className="border-slate-700" />
