@@ -37,19 +37,22 @@
 ---
 
 ## V1.0 – Skill Model 2.0 & Organization
-**Goal**: Redesign skills so they can be organized by hero, role, and custom categories, and so the same system can later support non-Overwatch games.
+**Goal**: Redesign skills so they can be organized by hero, role, and tags—and so the same system can later support non-Overwatch games. Categories are scrapped; Playlists will come in V1.2.
 
-- [ ] **Skill Schema Redesign**
-  - [ ] Add fields for game, hero, role, and flexible tags (e.g. "positioning", "mechanics", "scrim", "ranked").
-  - [ ] Ensure schema can represent multiple games (e.g. `gameId`, `heroId`/`characterId`).
-- [ ] **Organization & Filtering**
-  - [ ] Group skills by hero, role, and user-defined categories.
-  - [ ] Sort and filter skills (by role, hero, tag, recency of practice, etc.).
-- [ ] **UI/UX Pass for Skill List**
-  - [ ] Make it easy to quickly switch which “set” of skills is active for the upcoming session.
+- [x] **Skill Schema Redesign**
+  - [x] Add fields for game, hero, role (e.g. `gameId`, `heroIds`, `roleIds`).
+  - [x] Ensure schema can represent multiple games.
+  - [ ] Add tags as simple string array on Skill (e.g. `tags: ["Aim", "Positioning", "GameSense"]`).
+- [x] **Organization & Filtering**
+  - [x] Group and filter skills by hero and role.
+  - [x] Sort skills (by name, role, hero, created).
+  - [ ] Filter skills by tags (when tags are implemented).
+- [x] **UI/UX Pass for Skill List**
+  - [x] Hero/role filter panel for quick switching of which skills are visible.
+  - [x] Sort controls.
 
 **Dependency notes**:  
-This milestone lays the foundation for better personal practice flows, browsing skills, sharing them, and expanding beyond Overwatch.
+This milestone lays the foundation for better personal practice flows, browsing skills, sharing them, and expanding beyond Overwatch. See `docs/specs/v1.0-tags-and-categories.md` for tags (P1) and playlists (V1.2).
 
 ---
 
@@ -102,9 +105,10 @@ Uses the richer skill model from V1.0. Can be implemented locally first and late
 ## V1.2 – Personalization & Practice Flows (Gamification 1.1)
 **Goal**: Help users structure their own practice sessions and make the app feel more “game-like” without needing other users yet.
 
-- [ ] **Practice Playlists / Loadouts**
-  - [ ] Create “playlists” of skills (e.g. “Ranked Tank Session”, “Warmup”, “Scrim Checklist”).
-  - [ ] Quickly swap which playlist is active.
+- [ ] **Practice Playlists / Workouts**
+  - [ ] Create “playlists” of skills (e.g. “Tank Fundamentals”, “Ranked Tank Session”, “Warmup”, “Scrim Checklist”).
+  - [ ] **User flow**: "I'm playing Tank today, so I'll start my 'Tank Fundamentals' playlist."—provides a clear path rather than just a filtered list.
+  - [ ] Quickly swap which playlist is active for the session.
 - [ ] **Goals & Reminders**
   - [ ] Optional daily/weekly goals (e.g. “Use this skill in 5 games”).
   - [ ] Gentle reminders between matches to update ratings or adjust skills.
