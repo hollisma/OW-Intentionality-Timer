@@ -10,7 +10,7 @@ export const createSkillWithDefaults = (partial: Partial<Skill> = {}): Skill => 
     name: partial.name ?? 'New Focus',
     description: partial.description ?? '',
     tts: partial.tts ?? partial.name ?? 'New Focus',
-    interval: partial.interval ?? 60,
+    interval: Math.max(1, partial.interval ?? 60),
     heroIds: partial.heroIds ?? [],
     roleIds: partial.roleIds ?? [],
     categoryIds: partial.categoryIds ?? [],

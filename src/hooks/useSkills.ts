@@ -5,7 +5,7 @@ import { createSkillWithDefaults } from '../logic/skillDefaults';
 
 export const useSkills = (storage: SkillStorage, initialData: Skill[]) => {
   const [skills, setSkills] = useState<Skill[]>(initialData);
-  const [activeSkill, setActiveSkill] = useState<Skill>(initialData[0]);
+  const [activeSkill, setActiveSkill] = useState<Skill | null>(initialData.length > 0 ? initialData[0] : null);
   const [isLoading, setIsLoading] = useState(true);
 
   // Load skills from storage on mount
@@ -15,32 +15,32 @@ export const useSkills = (storage: SkillStorage, initialData: Skill[]) => {
         const storedSkills = await storage.getAll();
         const visibleSkills = storedSkills.filter(s => !s.isArchived);
 
-        if (visibleSkills.length > 0) {
-          setSkills(storedSkills);
-          setActiveSkill(visibleSkills[0]);
-        } else {
-          // If no stored skills, use initial data (presets) and save it
-          // If initialData is empty or invalid, fall back to empty array (per spec: keep app functional)
+        if (storedSkills.length === 0) {
+          // No persisted data: use initial presets and save them
           const safeInitialData = Array.isArray(initialData) && initialData.length > 0 ? initialData : [];
           setSkills(safeInitialData);
+          setActiveSkill(safeInitialData.length > 0 ? safeInitialData[0] : null);
           if (safeInitialData.length > 0) {
-            setActiveSkill(safeInitialData[0]);
             try {
               await storage.saveAll(safeInitialData);
             } catch (saveError) {
               console.error('Error saving initial skills:', saveError);
-              // Continue anyway - app should remain functional
             }
           }
+        } else if (visibleSkills.length > 0) {
+          // Has stored skills with at least one visible
+          setSkills(storedSkills);
+          setActiveSkill(visibleSkills[0]);
+        } else {
+          // All skills archived: keep stored data, do NOT overwrite with presets (P0 data loss fix)
+          setSkills(storedSkills);
+          setActiveSkill(null);
         }
       } catch (error) {
         console.error('Error loading skills:', error);
-        // Fallback: if presets fail to load, use empty array but keep app functional (per spec)
         const safeInitialData = Array.isArray(initialData) && initialData.length > 0 ? initialData : [];
         setSkills(safeInitialData);
-        if (safeInitialData.length > 0) {
-          setActiveSkill(safeInitialData[0]);
-        }
+        setActiveSkill(safeInitialData.length > 0 ? safeInitialData[0] : null);
       } finally {
         setIsLoading(false);
       }
@@ -99,12 +99,9 @@ export const useSkills = (storage: SkillStorage, initialData: Skill[]) => {
     }
 
     // If we deleted the active skill, switch to another visible skill
-    if (activeSkill.id === id) {
+    if (activeSkill?.id === id) {
       const nextActive = archivedSkills.find(s => !s.isArchived);
-      if (nextActive) {
-        setActiveSkill(nextActive);
-      }
-      // If no visible skills remain, keep the archived one as active (app should remain functional)
+      setActiveSkill(nextActive ?? null);
     }
   };
 

@@ -26,6 +26,7 @@ function App() {
     setSelectedRoleIds,
     setSelectedHeroIds,
     handleSortChange,
+    clearFilters,
   } = useSkillFilters(skills);
 
   const hasActiveFilters = selectedRoleIds.length > 0 || selectedHeroIds.length > 0;
@@ -134,6 +135,8 @@ function App() {
                 onSelect={(s) => !isActive && setActiveSkill(s)} 
                 onAdd={addSkill}
                 onReorder={!isActive ? handleReorder : () => {}}
+                showEmptyFilteredState={hasActiveFilters && skills.length > 0}
+                onClearFilters={clearFilters}
               />
               
               <button

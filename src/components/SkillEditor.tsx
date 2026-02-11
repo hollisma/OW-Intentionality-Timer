@@ -53,7 +53,7 @@ export const SkillEditor = ({ skill, isActive, onUpdate, onDelete }: SkillEditor
         label='Interval (Seconds)' 
         type='number' 
         value={skill.interval} 
-        onChange={(val) => onUpdate({ interval: parseInt(val) || 0 })} 
+        onChange={(val) => onUpdate({ interval: Math.max(1, parseInt(val) || 1) })} 
       />
       <InputGroup 
         label='Description' 

@@ -19,18 +19,33 @@ export function filterAndSortSkills(
 ): Skill[] {
   let filtered = [...skills];
 
-  // Filter by role (skill must have at least one matching role)
+  // Filter by role: role-specific skills match role; hero-only skills (no roles) show when hero belongs to selected role
   if (criteria.roleIds && criteria.roleIds.length > 0) {
-    filtered = filtered.filter(skill => 
-      skill.roleIds.length > 0 && skill.roleIds.some(roleId => criteria.roleIds!.includes(roleId))
-    );
+    filtered = filtered.filter(skill => {
+      if (skill.roleIds.length > 0 && skill.roleIds.some(roleId => criteria.roleIds!.includes(roleId))) {
+        return true;
+      }
+      // Hero-only skill: show if any of the skill's heroes belong to a selected role
+      if (skill.heroIds.length > 0) {
+        return skill.heroIds.some(heroId => {
+          const hero = HEROES.find(h => h.id === heroId);
+          return hero && criteria.roleIds!.includes(hero.roleId);
+        });
+      }
+      return false;
+    });
   }
 
-  // Filter by hero (skill must have at least one matching hero)
+  // Filter by hero: hero-specific skills must match hero; role-only skills (no heroes) show when role matches
   if (criteria.heroIds && criteria.heroIds.length > 0) {
-    filtered = filtered.filter(skill => 
-      skill.heroIds.length > 0 && skill.heroIds.some(heroId => criteria.heroIds!.includes(heroId))
-    );
+    filtered = filtered.filter(skill => {
+      if (skill.heroIds.length > 0) {
+        return skill.heroIds.some(heroId => criteria.heroIds!.includes(heroId));
+      }
+      // Role-only skill: show if it matches the role filter (applies to whole role)
+      return criteria.roleIds && criteria.roleIds.length > 0 &&
+        skill.roleIds.some(roleId => criteria.roleIds!.includes(roleId));
+    });
   }
 
   // Filter by category

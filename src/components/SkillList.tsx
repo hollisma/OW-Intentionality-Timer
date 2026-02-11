@@ -8,9 +8,12 @@ interface SkillListProps {
   onSelect: (skill: Skill) => void;
   onAdd: () => void;
   onReorder: (startIndex: number, endIndex: number) => void;
+  /** When true and skills is empty, show "No skills match your filters" instead of empty list */
+  showEmptyFilteredState?: boolean;
+  onClearFilters?: () => void;
 }
 
-export const SkillList = ({ skills, activeId, onSelect, onAdd, onReorder }: SkillListProps) => {
+export const SkillList = ({ skills, activeId, onSelect, onAdd, onReorder, showEmptyFilteredState, onClearFilters }: SkillListProps) => {
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
 
@@ -48,7 +51,21 @@ export const SkillList = ({ skills, activeId, onSelect, onAdd, onReorder }: Skil
         </button>
       </div>
       
-      {/* Skill Cards */}
+      {/* Empty filtered state */}
+      {showEmptyFilteredState && skills.length === 0 ? (
+        <div className='py-6 text-center text-slate-400'>
+          <p className='text-sm'>No skills match your filters.</p>
+          <p className='text-xs mt-2'>Try clearing filters or add a new skill.</p>
+          {onClearFilters && (
+            <button
+              onClick={onClearFilters}
+              className='mt-3 text-orange-400 hover:text-orange-300 font-bold uppercase text-xs transition'
+            >
+              Clear filters
+            </button>
+          )}
+        </div>
+      ) : (
       <div className='flex flex-col gap-3'>
         {skills.map((skill, index) => (
           <div
@@ -67,6 +84,7 @@ export const SkillList = ({ skills, activeId, onSelect, onAdd, onReorder }: Skil
           </div>
         ))}
       </div>
+      )}
     </div>
   );
 };
