@@ -1,5 +1,5 @@
 import { type Skill, type RoleId, type HeroId } from '../types/Skill';
-import { InputGroup } from './InputGroup';
+import { InputGroup } from './ui/InputGroup';
 import { ROLES, HEROES } from '../data/overwatchHeroes';
 import { chipBase, chipSelected, chipUnselected } from '../styles/chipStyles';
 

@@ -7,13 +7,14 @@ interface SkillListProps {
   activeId: string; 
   onSelect: (skill: Skill) => void;
   onAdd: () => void;
+  onDelete?: (skill: Skill) => void;
   onReorder: (startIndex: number, endIndex: number) => void;
   /** When true and skills is empty, show "No skills match your filters" instead of empty list */
   showEmptyFilteredState?: boolean;
   onClearFilters?: () => void;
 }
 
-export const SkillList = ({ skills, activeId, onSelect, onAdd, onReorder, showEmptyFilteredState, onClearFilters }: SkillListProps) => {
+export const SkillList = ({ skills, activeId, onSelect, onAdd, onDelete, onReorder, showEmptyFilteredState, onClearFilters }: SkillListProps) => {
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
 
@@ -77,6 +78,7 @@ export const SkillList = ({ skills, activeId, onSelect, onAdd, onReorder, showEm
               isActive={activeId === skill.id}
               index={index}
               onSelect={onSelect}
+              onDelete={onDelete}
               onDragStart={handleDragStart}
               onDragOver={handleDragOver}
               onDragEnd={handleDragEnd}

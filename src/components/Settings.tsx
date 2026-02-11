@@ -1,5 +1,5 @@
 import { type SettingsStorage } from '../storage/SettingsStorage';
-import { InputGroup } from './InputGroup';
+import { InputGroup } from './ui/InputGroup';
 
 interface SettingsProps {
   volume: number;

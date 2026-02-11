@@ -1,17 +1,19 @@
 import { type Skill } from '../types/Skill';
 import { getHeroNames, getRoleNames } from '../logic/skillSelectors';
+import { DeleteButton } from './ui/DeleteButton';
 
 interface SkillListCardProps {
   skill: Skill;
   isActive: boolean; 
   index: number;
   onSelect: (skill: Skill) => void;
+  onDelete?: (skill: Skill) => void;
   onDragStart: (index: number) => void;
   onDragOver: (index: number) => void;
   onDragEnd: () => void;
 }
 
-export const SkillListCard = ({ skill, isActive, index, onSelect, onDragStart, onDragOver, onDragEnd }: SkillListCardProps) => {
+export const SkillListCard = ({ skill, isActive, index, onSelect, onDelete, onDragStart, onDragOver, onDragEnd }: SkillListCardProps) => {
   const roleNames = getRoleNames(skill.roleIds);
   const heroNames = getHeroNames(skill.heroIds);
 
@@ -109,6 +111,13 @@ export const SkillListCard = ({ skill, isActive, index, onSelect, onDragStart, o
           </span>
         </div>
       </button>
+
+      {onDelete && (
+        <DeleteButton
+          onClick={() => onDelete(skill)}
+          ariaLabel={`Delete ${skill.name}`}
+        />
+      )}
     </div>
 	)
 }

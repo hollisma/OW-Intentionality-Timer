@@ -1,10 +1,11 @@
 import { useCallback } from 'react';
+import type { Skill } from './types/Skill';
 import { useTimer } from './hooks/useTimer';
 import { SkillList } from './components/SkillList';
 import { SkillEditor } from './components/SkillEditor';
 import { Settings } from './components/Settings';
 import { SkillFiltersPanel } from './components/SkillFiltersPanel';
-import { Card } from './components/Card';
+import { Card } from './components/ui/Card';
 import { LocalStorageSettingsStorage } from './storage/LocalStorageSettingsStorage';
 import { useSkillStore } from './hooks/useSkillStore';
 import { useSkillFilters } from './hooks/useSkillFilters';
@@ -64,9 +65,18 @@ function App() {
     });
   }, [activeSkill, deleteSkill, restoreSkill, showToast, hasActiveSkill]);
 
+  const handleDeleteSkillFromList = useCallback((skill: Skill) => {
+    const skillToDelete = { ...skill };
+    deleteSkill(skillToDelete.id);
+    showToast(skillToDelete.name ? `Removed ${skillToDelete.name}` : 'Skill deleted', {
+      onUndo: () => restoreSkill(skillToDelete),
+      duration: 4500,
+    });
+  }, [deleteSkill, restoreSkill, showToast]);
+
   return (
     <div className='min-h-screen w-screen bg-slate-900 flex flex-col items-center py-10 px-4 overflow-y-auto gap-6 scrollbar-app'>
-      <div className='w-full max-w-md'>
+      <div className='w-full max-w-lg'>
         <header className='flex justify-between items-center mb-6'>
           <h2 className='text-2xl font-bold text-white uppercase italic tracking-tighter'>Intentionality</h2>
         </header>
@@ -141,6 +151,7 @@ function App() {
                 activeId={hasActiveSkill ? activeSkill.id : ''} 
                 onSelect={(s) => !isActive && setActiveSkill(s)} 
                 onAdd={addSkill}
+                onDelete={handleDeleteSkillFromList}
                 onReorder={!isActive ? handleReorder : () => {}}
                 showEmptyFilteredState={hasActiveFilters && skills.length > 0}
                 onClearFilters={clearFilters}
