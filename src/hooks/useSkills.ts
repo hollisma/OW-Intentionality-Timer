@@ -105,6 +105,16 @@ export const useSkills = (storage: SkillStorage, initialData: Skill[]) => {
     }
   };
 
+  const restoreSkill = (skillToRestore: Skill) => {
+    const restoredSkill = { ...skillToRestore, isArchived: false, updatedAt: new Date().toISOString() };
+    setSkills(prev => {
+      const exists = prev.some(s => s.id === restoredSkill.id);
+      if (!exists) return [restoredSkill, ...prev];
+      return prev.map(s => (s.id === restoredSkill.id ? restoredSkill : s));
+    });
+    setActiveSkill(restoredSkill);
+  };
+
   const resetSkills = async () => {
     const safeInitialData = Array.isArray(initialData) && initialData.length > 0 ? initialData : [];
     setSkills(safeInitialData);
@@ -129,5 +139,5 @@ export const useSkills = (storage: SkillStorage, initialData: Skill[]) => {
 
   const visibleSkills = skills.filter(s => !s.isArchived);
 
-  return { skills: visibleSkills, activeSkill, setActiveSkill, addSkill, saveSkill, deleteSkill, resetSkills, reorderSkill, isLoading };
+  return { skills: visibleSkills, activeSkill, setActiveSkill, addSkill, saveSkill, deleteSkill, restoreSkill, resetSkills, reorderSkill, isLoading };
 };

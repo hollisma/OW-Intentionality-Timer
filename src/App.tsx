@@ -10,12 +10,14 @@ import { useSkillStore } from './hooks/useSkillStore';
 import { useSkillFilters } from './hooks/useSkillFilters';
 import { useSkillReorder } from './hooks/useSkillReorder';
 import { useSettings } from './hooks/useSettings';
+import { useToast } from './hooks/useToast';
 
 const settingsStorage = new LocalStorageSettingsStorage();
 
 function App() {
   const { volume, delay, setVolume, setDelay } = useSettings(settingsStorage);
-  const { skills, activeSkill, setActiveSkill, addSkill, saveSkill, deleteSkill, resetSkills, reorderSkill } = useSkillStore();
+  const { skills, activeSkill, setActiveSkill, addSkill, saveSkill, deleteSkill, restoreSkill, resetSkills, reorderSkill } = useSkillStore();
+  const { showToast } = useToast();
   
   const {
     selectedRoleIds,
@@ -54,8 +56,13 @@ function App() {
 
   const handleSkillDelete = useCallback(() => {
     if (!hasActiveSkill) return;
-    deleteSkill(activeSkill.id);
-  }, [activeSkill, deleteSkill, hasActiveSkill]);
+    const skillToDelete = { ...activeSkill };
+    deleteSkill(skillToDelete.id);
+    showToast(skillToDelete.name ? `Removed ${skillToDelete.name}` : 'Skill deleted', {
+      onUndo: () => restoreSkill(skillToDelete),
+      duration: 4500,
+    });
+  }, [activeSkill, deleteSkill, restoreSkill, showToast, hasActiveSkill]);
 
   return (
     <div className='min-h-screen w-screen bg-slate-900 flex flex-col items-center py-10 px-4 overflow-y-auto gap-6 scrollbar-app'>
