@@ -1,16 +1,75 @@
+import { useState, useRef, useEffect } from 'react';
 import { type Skill, type RoleId, type HeroId } from '../types/Skill';
 import { InputGroup } from './ui/InputGroup';
 import { ROLES, HEROES } from '../data/overwatchHeroes';
-import { chipBase, chipSelected, chipUnselected } from '../styles/chipStyles';
+import { chipBase, chipSelected, chipUnselected, chipTag } from '../styles/chipStyles';
+import { getUniqueTags, toTagDisplayCase } from '../logic/skillSelectors';
 
 interface SkillEditorProps {
   skill: Skill;
+  allSkills: Skill[];
   isActive: boolean;
   onUpdate: (updates: Partial<Skill>) => void;
   onDelete: () => void;
 }
 
-export const SkillEditor = ({ skill, isActive, onUpdate, onDelete }: SkillEditorProps) => {
+function normalizeTag(tag: string): string {
+  return tag.trim().toLowerCase();
+}
+
+function hasTag(skill: Skill, tag: string): boolean {
+  const norm = normalizeTag(tag);
+  return skill.tags.some(t => normalizeTag(t) === norm);
+}
+
+export const SkillEditor = ({ skill, allSkills, isActive, onUpdate, onDelete }: SkillEditorProps) => {
+  const [tagInput, setTagInput] = useState('');
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const suggestionRef = useRef<HTMLDivElement>(null);
+
+  const allTags = getUniqueTags(allSkills);
+  const suggestions = tagInput.trim()
+    ? allTags.filter(t => t.toLowerCase().includes(tagInput.toLowerCase()) && !hasTag(skill, t))
+    : [];
+
+  const addTag = (tag: string) => {
+    const trimmed = tag.trim();
+    if (!trimmed || hasTag(skill, trimmed)) return;
+    const displayTag = toTagDisplayCase(trimmed);
+    if (hasTag(skill, displayTag)) return; // prevent duplicate after normalizing
+    onUpdate({ tags: [...skill.tags, displayTag] });
+    setTagInput('');
+    setShowSuggestions(false);
+  };
+
+  const removeTag = (tag: string) => {
+    const norm = normalizeTag(tag);
+    onUpdate({ tags: skill.tags.filter(t => normalizeTag(t) !== norm) });
+  };
+
+  const handleTagKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      addTag(tagInput);
+    }
+  };
+
+  const handleTagBlur = () => {
+    // Only hide dropdown on blur; do NOT add tag (user must press Enter or click dropdown)
+    setTimeout(() => setShowSuggestions(false), 150);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (suggestionRef.current && !suggestionRef.current.contains(e.target as Node) && inputRef.current && !inputRef.current.contains(e.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const toggleRole = (roleId: RoleId) => {
     const newRoleIds = skill.roleIds.includes(roleId)
       ? skill.roleIds.filter(id => id !== roleId)
@@ -111,6 +170,68 @@ export const SkillEditor = ({ skill, isActive, onUpdate, onDelete }: SkillEditor
               </button>
             ))}
           </div>
+        </div>
+      </div>
+
+      {/* Tags — input + removable chips */}
+      <div className='flex flex-col gap-2'>
+        <label className='text-xs font-bold text-slate-400 uppercase tracking-wider'>
+          Tags
+        </label>
+        <div className='relative'>
+          <div className='bg-slate-950/50 border border-slate-700/60 rounded-xl p-2.5 flex flex-wrap gap-2'>
+            {skill.tags.map(tag => (
+              <span
+                key={tag}
+                className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold uppercase ${chipTag}`}
+              >
+                {tag}
+                {!isActive && (
+                  <button
+                    type='button'
+                    onClick={() => removeTag(tag)}
+                    aria-label={`Remove ${tag}`}
+                    className='ml-0.5 w-4 flex items-center justify-center p-0 leading-none text-base font-medium hover:bg-white/20 rounded transition shrink-0'
+                  >
+                    ×
+                  </button>
+                )}
+              </span>
+            ))}
+            {!isActive && (
+              <input
+                ref={inputRef}
+                type='text'
+                value={tagInput}
+                onChange={(e) => { setTagInput(e.target.value); setShowSuggestions(true); }}
+                onKeyDown={handleTagKeyDown}
+                onBlur={handleTagBlur}
+                onFocus={() => tagInput.trim() && setShowSuggestions(true)}
+                placeholder='Add tag…'
+                className='flex-1 min-w-[100px] bg-transparent border-none outline-none text-white placeholder-slate-500 text-xs'
+              />
+            )}
+          </div>
+          {!isActive && showSuggestions && suggestions.length > 0 && (
+            <div
+              ref={suggestionRef}
+              className='absolute z-10 mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg shadow-lg max-h-32 overflow-y-auto'
+            >
+              {suggestions.map(tag => (
+                <button
+                  key={tag}
+                  type='button'
+                  onMouseDown={(e) => {
+                    e.preventDefault(); // prevent input blur before we add
+                    addTag(tag);
+                  }}
+                  className='w-full text-left px-3 py-2 text-xs text-slate-300 hover:bg-slate-700 transition'
+                >
+                  {tag}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 

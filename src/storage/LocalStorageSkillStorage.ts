@@ -18,8 +18,8 @@ export class LocalStorageSkillStorage implements SkillStorage {
       if (!stored) {
         return [];
       }
-      const parsed = JSON.parse(stored) as Array<Partial<Skill> & { heroId?: string | null; roleId?: string | null }>;
-      // Migrate old single heroId/roleId to arrays
+      const parsed = JSON.parse(stored) as Array<Partial<Skill> & { heroId?: string | null; roleId?: string | null; tagIds?: string[]; categoryIds?: string[] }>;
+      // Migrate old single heroId/roleId to arrays; migrate tagIds/categoryIds to tags
       const migrated = parsed.map(skill => {
         const migratedSkill: Partial<Skill> = { ...skill };
         // Convert old heroId to heroIds array
@@ -32,6 +32,12 @@ export class LocalStorageSkillStorage implements SkillStorage {
           migratedSkill.roleIds = skill.roleId ? [skill.roleId] : [];
           delete (migratedSkill as any).roleId;
         }
+        // Migrate tagIds/categoryIds to tags: string[] (IDs cannot map to labels; drop legacy)
+        if (!('tags' in skill) || skill.tags === undefined) {
+          migratedSkill.tags = [];
+        }
+        delete (migratedSkill as any).tagIds;
+        delete (migratedSkill as any).categoryIds;
         return migratedSkill;
       });
       return migrated.map(createSkillWithDefaults);

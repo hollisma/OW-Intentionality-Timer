@@ -6,22 +6,30 @@ import { chipBase, chipSelected, chipUnselected } from '../styles/chipStyles';
 interface SkillFiltersPanelProps {
   selectedRoleIds: RoleId[];
   selectedHeroIds: HeroId[];
+  selectedTags: string[];
+  availableTags: string[];
   sortBy: SkillSortKey;
   sortDirection: 'asc' | 'desc';
   onRoleFilterChange: (roleIds: RoleId[]) => void;
   onHeroFilterChange: (heroIds: HeroId[]) => void;
+  onTagToggle: (tag: string) => void;
   onSortChange: (sortBy: SkillSortKey, direction: 'asc' | 'desc') => void;
 }
 
 export const SkillFiltersPanel = ({
   selectedRoleIds,
   selectedHeroIds,
+  selectedTags,
+  availableTags,
   sortBy,
   sortDirection,
   onRoleFilterChange,
   onHeroFilterChange,
+  onTagToggle,
   onSortChange,
 }: SkillFiltersPanelProps) => {
+  const isTagSelected = (tag: string) =>
+    selectedTags.some(t => t.toLowerCase() === tag.toLowerCase());
   const toggleRole = (roleId: RoleId) => {
     if (selectedRoleIds.includes(roleId)) {
       const newRoleIds = selectedRoleIds.filter(id => id !== roleId);
@@ -100,6 +108,30 @@ export const SkillFiltersPanel = ({
                     {hero.name}
                   </button>
                 ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Tag Filters */}
+      {availableTags.length > 0 && (
+        <div className='flex flex-col gap-2'>
+          <label className='text-xs font-bold text-slate-400 uppercase tracking-wider'>
+            Tags
+          </label>
+          <div className='bg-slate-950/50 border border-slate-700/60 rounded-xl p-2.5'>
+            <div className='flex flex-wrap gap-2'>
+              {availableTags.map(tag => (
+                <button
+                  key={tag}
+                  onClick={() => onTagToggle(tag)}
+                  className={`${chipBase} ${
+                    isTagSelected(tag) ? chipSelected : chipUnselected
+                  }`}
+                >
+                  {tag}
+                </button>
+              ))}
             </div>
           </div>
         </div>

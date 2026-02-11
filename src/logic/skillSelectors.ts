@@ -1,11 +1,11 @@
-import type { Skill, RoleId, HeroId, CategoryId, TagId } from '../types/Skill';
+import type { Skill, RoleId, HeroId } from '../types/Skill';
 import { HEROES } from '../data/overwatchHeroes';
 
 export interface SkillFilterCriteria {
   roleIds?: RoleId[];
   heroIds?: HeroId[];
-  categoryIds?: CategoryId[];
-  tagIds?: TagId[];
+  /** Show skills that have ANY of these tags (case-insensitive) */
+  tags?: string[];
   searchQuery?: string;
 }
 
@@ -48,17 +48,12 @@ export function filterAndSortSkills(
     });
   }
 
-  // Filter by category
-  if (criteria.categoryIds && criteria.categoryIds.length > 0) {
+  // Filter by tags: show skills that have ANY of the selected tags (case-insensitive)
+  if (criteria.tags && criteria.tags.length > 0) {
+    const norm = (s: string) => s.toLowerCase().trim();
+    const selectedNorm = criteria.tags.map(norm).filter(Boolean);
     filtered = filtered.filter(skill =>
-      skill.categoryIds.some(catId => criteria.categoryIds!.includes(catId))
-    );
-  }
-
-  // Filter by tag
-  if (criteria.tagIds && criteria.tagIds.length > 0) {
-    filtered = filtered.filter(skill =>
-      skill.tagIds.some(tagId => criteria.tagIds!.includes(tagId))
+      skill.tags.some(tag => selectedNorm.includes(norm(tag)))
     );
   }
 
@@ -125,4 +120,23 @@ export function getRoleNames(roleIds: RoleId[]): string[] {
     flex: 'Flex',
   };
   return roleIds.map(id => roleMap[id] ?? id);
+}
+
+/** Normalize tag to consistent display form: Title Case (first letter uppercase, rest lowercase) */
+export function toTagDisplayCase(tag: string): string {
+  const t = tag.trim();
+  if (!t) return t;
+  return t.charAt(0).toUpperCase() + t.slice(1).toLowerCase();
+}
+
+/** Get unique tags used across all skills, sorted alphabetically. Uses Title Case for consistency and dedupes by lowercase. */
+export function getUniqueTags(skills: Skill[]): string[] {
+  const seen = new Map<string, string>(); // normalized (lowercase) -> display form
+  skills.flatMap(s => s.tags).forEach(tag => {
+    const t = tag.trim();
+    if (!t) return;
+    const norm = t.toLowerCase();
+    if (!seen.has(norm)) seen.set(norm, toTagDisplayCase(t));
+  });
+  return [...seen.values()].sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
 }

@@ -1,5 +1,5 @@
 import { type Skill } from '../types/Skill';
-import { getHeroNames, getRoleNames } from '../logic/skillSelectors';
+import { getHeroNames, getRoleNames, toTagDisplayCase } from '../logic/skillSelectors';
 import { DeleteButton } from './ui/DeleteButton';
 
 interface SkillListCardProps {
@@ -70,7 +70,7 @@ export const SkillListCard = ({ skill, isActive, index, onSelect, onDelete, onDr
                 </span>
               )}
             </div>
-            {(roleNames.length > 0 || heroNames.length > 0) && (
+            {(roleNames.length > 0 || heroNames.length > 0 || skill.tags.length > 0) && (
               <div className='flex items-center gap-2 mt-1 flex-wrap'>
                 {roleNames.map(roleName => (
                   <span 
@@ -94,6 +94,20 @@ export const SkillListCard = ({ skill, isActive, index, onSelect, onDelete, onDr
                     }`}
                   >
                     {heroName}
+                  </span>
+                ))}
+                {skill.tags
+                  .filter((tag, i, arr) => arr.findIndex(t => t.toLowerCase() === tag.toLowerCase()) === i)
+                  .map(tag => (
+                  <span 
+                    key={tag.toLowerCase()}
+                    className={`text-[10px] px-1.5 py-0.5 rounded uppercase font-bold ${
+                      isActive 
+                        ? 'bg-orange-500/20 text-orange-300' 
+                        : 'bg-slate-700/80 text-slate-400'
+                    }`}
+                  >
+                    #{toTagDisplayCase(tag)}
                   </span>
                 ))}
               </div>

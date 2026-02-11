@@ -2,8 +2,6 @@
 export type GameId = 'overwatch' | string;
 export type HeroId = string;
 export type RoleId = 'tank' | 'damage' | 'support' | 'flex' | string;
-export type CategoryId = string;
-export type TagId = string;
 
 export interface Skill {
   id: string;
@@ -20,8 +18,8 @@ export interface Skill {
   heroIds: HeroId[];
   roleIds: RoleId[];
 
-  categoryIds: CategoryId[];
-  tagIds: TagId[];
+  /** Simple metadata strings (e.g. ["Aim", "Positioning", "GameSense"]) */
+  tags: string[];
 
   // Lifecycle / origin flags
   isPreset: boolean;
@@ -41,18 +39,4 @@ export interface HeroMeta {
   id: HeroId;
   name: string;
   roleId: RoleId;
-}
-
-export interface Category {
-  id: CategoryId;
-  name: string;
-  gameId: GameId;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface Tag {
-  id: TagId;
-  label: string;
-  gameId: GameId;
 }

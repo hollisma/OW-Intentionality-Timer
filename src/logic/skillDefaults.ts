@@ -1,4 +1,16 @@
 import type { Skill } from '../types/Skill';
+import { toTagDisplayCase } from './skillSelectors';
+
+function normalizeTags(tags: string[]): string[] {
+  const seen = new Set<string>();
+  return tags
+    .map(t => toTagDisplayCase(t.trim()))
+    .filter(t => {
+      if (!t || seen.has(t.toLowerCase())) return false;
+      seen.add(t.toLowerCase());
+      return true;
+    });
+}
 
 // Shared factory for creating a Skill with sensible defaults.
 // Used by storage (when hydrating) and by hooks when creating new skills.
@@ -13,8 +25,7 @@ export const createSkillWithDefaults = (partial: Partial<Skill> = {}): Skill => 
     interval: Math.max(1, partial.interval ?? 60),
     heroIds: partial.heroIds ?? [],
     roleIds: partial.roleIds ?? [],
-    categoryIds: partial.categoryIds ?? [],
-    tagIds: partial.tagIds ?? [],
+    tags: normalizeTags(partial.tags ?? []),
     isPreset: partial.isPreset ?? false,
     isArchived: partial.isArchived ?? false,
     createdAt: partial.createdAt ?? now,

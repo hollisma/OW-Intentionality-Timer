@@ -23,16 +23,19 @@ function App() {
   const {
     selectedRoleIds,
     selectedHeroIds,
+    selectedTags,
+    availableTags,
     sortBy,
     sortDirection,
     filteredAndSortedSkills,
     setSelectedRoleIds,
     setSelectedHeroIds,
+    toggleTag,
     handleSortChange,
     clearFilters,
   } = useSkillFilters(skills);
 
-  const hasActiveFilters = selectedRoleIds.length > 0 || selectedHeroIds.length > 0;
+  const hasActiveFilters = selectedRoleIds.length > 0 || selectedHeroIds.length > 0 || selectedTags.length > 0;
   const handleReorder = useSkillReorder(skills, filteredAndSortedSkills, reorderSkill, hasActiveFilters);
 
   // Safety check: if no active skill, don't render timer (app should remain functional)
@@ -105,7 +108,8 @@ function App() {
           <Card>
             {hasActiveSkill ? (
               <SkillEditor 
-                skill={activeSkill} 
+                skill={activeSkill}
+                allSkills={skills}
                 isActive={isActive}
                 onUpdate={handleSkillUpdate}
                 onDelete={handleSkillDelete}
@@ -136,10 +140,13 @@ function App() {
               <SkillFiltersPanel
                 selectedRoleIds={selectedRoleIds}
                 selectedHeroIds={selectedHeroIds}
+                selectedTags={selectedTags}
+                availableTags={availableTags}
                 sortBy={sortBy}
                 sortDirection={sortDirection}
                 onRoleFilterChange={setSelectedRoleIds}
                 onHeroFilterChange={setSelectedHeroIds}
+                onTagToggle={toggleTag}
                 onSortChange={handleSortChange}
               />
 

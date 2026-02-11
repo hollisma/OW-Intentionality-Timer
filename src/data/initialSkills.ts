@@ -9,6 +9,7 @@ export const INITIAL_SKILLS: Skill[] = [
     tts: 'off angles',
     interval: 20,
     isPreset: true,
+    tags: ['Positioning'],
   }),
   createSkillWithDefaults({
     id: 'target-priority',
@@ -17,6 +18,7 @@ export const INITIAL_SKILLS: Skill[] = [
     tts: 'target priority',
     interval: 30,
     isPreset: true,
+    tags: ['Game Sense', 'Aim'],
   }),
   createSkillWithDefaults({
     id: 'ult-tracking',
@@ -25,6 +27,7 @@ export const INITIAL_SKILLS: Skill[] = [
     tts: 'ult tracking',
     interval: 45,
     isPreset: true,
+    tags: ['Game Sense'],
   }),
   createSkillWithDefaults({
     id: 'tp-then-suzu',
@@ -35,6 +38,7 @@ export const INITIAL_SKILLS: Skill[] = [
     heroIds: ['kiriko'],
     roleIds: ['support'],
     isPreset: true,
+    tags: ['Positioning'],
   }),
   createSkillWithDefaults({
     id: 'engage-with-team',
@@ -44,6 +48,7 @@ export const INITIAL_SKILLS: Skill[] = [
     interval: 30,
     roleIds: ['tank'],
     isPreset: true,
+    tags: ['Game Sense'],
   }),
 ];
 

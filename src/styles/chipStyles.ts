@@ -5,3 +5,6 @@ export const chipSelected =
   'bg-orange-500 text-white shadow-sm shadow-orange-500/20 ring-1 ring-orange-400/30';
 export const chipUnselected =
   'bg-slate-800/80 text-slate-300 border border-slate-600/50 hover:bg-slate-700 hover:border-slate-500';
+/** Muted style for tag chips (not as prominent as selected filters) */
+export const chipTag =
+  'bg-slate-700/80 text-slate-300 border border-slate-600/50';
