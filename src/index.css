@@ -15,6 +15,26 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Custom scrollbar - matches slate/orange app aesthetic */
+.scrollbar-app {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(71 85 105) transparent;
+}
+.scrollbar-app::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.scrollbar-app::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollbar-app::-webkit-scrollbar-thumb {
+  background: rgb(71 85 105);
+  border-radius: 3px;
+}
+.scrollbar-app::-webkit-scrollbar-thumb:hover {
+  background: rgb(100 116 139);
+}
+
 a {
   font-weight: 500;
   color: #646cff;

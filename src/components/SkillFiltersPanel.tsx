@@ -1,6 +1,7 @@
 import { type RoleId, type HeroId } from '../types/Skill';
 import { ROLES, HEROES } from '../data/overwatchHeroes';
 import type { SkillSortKey } from '../logic/skillSelectors';
+import { chipBase, chipSelected, chipUnselected } from '../styles/chipStyles';
 
 interface SkillFiltersPanelProps {
   selectedRoleIds: RoleId[];
@@ -61,20 +62,20 @@ export const SkillFiltersPanel = ({
         <label className='text-xs font-bold text-slate-400 uppercase tracking-wider'>
           Roles
         </label>
-        <div className='flex flex-wrap gap-2'>
-          {ROLES.map(role => (
-            <button
-              key={role.id}
-              onClick={() => toggleRole(role.id)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase transition ${
-                selectedRoleIds.includes(role.id)
-                  ? 'bg-orange-500 text-white'
-                  : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-              }`}
-            >
-              {role.name}
-            </button>
-          ))}
+        <div className='bg-slate-950/50 border border-slate-700/60 rounded-xl p-2.5'>
+          <div className='flex flex-wrap gap-2'>
+            {ROLES.map(role => (
+              <button
+                key={role.id}
+                onClick={() => toggleRole(role.id)}
+                className={`${chipBase} ${
+                  selectedRoleIds.includes(role.id) ? chipSelected : chipUnselected
+                }`}
+              >
+                {role.name}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -82,24 +83,24 @@ export const SkillFiltersPanel = ({
       {selectedRoleIds.length > 0 && (
         <div className='flex flex-col gap-2'>
           <label className='text-xs font-bold text-slate-400 uppercase tracking-wider'>
-            Heroes
+            Heroes <span className='text-slate-500 font-normal normal-case'>— {selectedRoleIds.map(r => ROLES.find(role => role.id === r)?.name).join(', ')}</span>
           </label>
-          <div className='flex flex-wrap gap-2'>
-            {HEROES
-              .filter(hero => selectedRoleIds.includes(hero.roleId))
-              .map(hero => (
-                <button
-                  key={hero.id}
-                  onClick={() => toggleHero(hero.id)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase transition ${
-                    selectedHeroIds.includes(hero.id)
-                      ? 'bg-orange-500 text-white'
-                      : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-                  }`}
-                >
-                  {hero.name}
-                </button>
-              ))}
+          <div className='bg-slate-950/50 border border-slate-700/60 rounded-xl p-2.5'>
+            <div className='flex flex-wrap gap-2'>
+              {HEROES
+                .filter(hero => selectedRoleIds.includes(hero.roleId))
+                .map(hero => (
+                  <button
+                    key={hero.id}
+                    onClick={() => toggleHero(hero.id)}
+                    className={`${chipBase} ${
+                      selectedHeroIds.includes(hero.id) ? chipSelected : chipUnselected
+                    }`}
+                  >
+                    {hero.name}
+                  </button>
+                ))}
+            </div>
           </div>
         </div>
       )}

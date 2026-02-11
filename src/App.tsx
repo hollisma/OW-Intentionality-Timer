@@ -57,7 +57,7 @@ function App() {
   }, [activeSkill, deleteSkill, hasActiveSkill]);
 
   return (
-    <div className='min-h-screen w-screen bg-slate-900 flex flex-col items-center py-10 px-4 overflow-y-auto gap-6'>
+    <div className='min-h-screen w-screen bg-slate-900 flex flex-col items-center py-10 px-4 overflow-y-auto gap-6 scrollbar-app'>
       <div className='w-full max-w-md'>
         <header className='flex justify-between items-center mb-6'>
           <h2 className='text-2xl font-bold text-white uppercase italic tracking-tighter'>Intentionality</h2>

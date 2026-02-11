@@ -1,6 +1,7 @@
 import { type Skill, type RoleId, type HeroId } from '../types/Skill';
 import { InputGroup } from './InputGroup';
 import { ROLES, HEROES } from '../data/overwatchHeroes';
+import { chipBase, chipSelected, chipUnselected } from '../styles/chipStyles';
 
 interface SkillEditorProps {
   skill: Skill;
@@ -61,49 +62,55 @@ export const SkillEditor = ({ skill, isActive, onUpdate, onDelete }: SkillEditor
         onChange={(val) => onUpdate({ description: val })} 
       />
       
-      {/* Role Selection (Multiple) */}
+      {/* Role Selection — pill-style chips */}
       <div className='flex flex-col gap-2'>
-        <label className='text-xs font-bold text-slate-400 uppercase tracking-wider'>Roles</label>
-        <div className='flex flex-wrap gap-2'>
-          {ROLES.map(role => (
-            <button
-              key={role.id}
-              type='button'
-              onClick={() => !isActive && toggleRole(role.id)}
-              disabled={isActive}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase transition ${
-                skill.roleIds.includes(role.id)
-                  ? 'bg-orange-500 text-white'
-                  : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-              } disabled:opacity-50`}
-            >
-              {role.name}
-            </button>
-          ))}
+        <label className='text-xs font-bold text-slate-400 uppercase tracking-wider'>
+          Roles
+        </label>
+        <div className='bg-slate-950/50 border border-slate-700/60 rounded-xl p-2.5'>
+          <div className='flex flex-wrap gap-2'>
+            {ROLES.map(role => (
+              <button
+                key={role.id}
+                type='button'
+                onClick={() => !isActive && toggleRole(role.id)}
+                disabled={isActive}
+                className={`${chipBase} ${
+                  skill.roleIds.includes(role.id) ? chipSelected : chipUnselected
+                }`}
+              >
+                {role.name}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* Hero Selection (Multiple) */}
+      {/* Hero Selection — scrollable container with custom scrollbar */}
       <div className='flex flex-col gap-2'>
         <label className='text-xs font-bold text-slate-400 uppercase tracking-wider'>
-          Heroes {skill.roleIds.length > 0 && `(${skill.roleIds.map(r => ROLES.find(role => role.id === r)?.name).join(', ')})`}
+          Heroes {skill.roleIds.length > 0 && (
+            <span className='text-slate-500 font-normal normal-case'>
+              — {skill.roleIds.map(r => ROLES.find(role => role.id === r)?.name).join(', ')}
+            </span>
+          )}
         </label>
-        <div className='flex flex-wrap gap-2 max-h-32 overflow-y-auto'>
-          {availableHeroes.map(hero => (
-            <button
-              key={hero.id}
-              type='button'
-              onClick={() => !isActive && toggleHero(hero.id)}
-              disabled={isActive}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase transition ${
-                skill.heroIds.includes(hero.id)
-                  ? 'bg-orange-500 text-white'
-                  : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-              } disabled:opacity-50`}
-            >
-              {hero.name}
-            </button>
-          ))}
+        <div className='bg-slate-950/50 border border-slate-700/60 rounded-xl p-2.5'>
+          <div className='flex flex-wrap gap-2 max-h-28 overflow-y-auto overflow-x-hidden scrollbar-app pr-1'>
+            {availableHeroes.map(hero => (
+              <button
+                key={hero.id}
+                type='button'
+                onClick={() => !isActive && toggleHero(hero.id)}
+                disabled={isActive}
+                className={`${chipBase} ${
+                  skill.heroIds.includes(hero.id) ? chipSelected : chipUnselected
+                }`}
+              >
+                {hero.name}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
