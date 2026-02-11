@@ -4,6 +4,7 @@ import { SkillList } from './components/SkillList';
 import { SkillEditor } from './components/SkillEditor';
 import { Settings } from './components/Settings';
 import { SkillFiltersPanel } from './components/SkillFiltersPanel';
+import { Card } from './components/Card';
 import { LocalStorageSettingsStorage } from './storage/LocalStorageSettingsStorage';
 import { useSkillStore } from './hooks/useSkillStore';
 import { useSkillFilters } from './hooks/useSkillFilters';
@@ -56,91 +57,95 @@ function App() {
   }, [activeSkill, deleteSkill, hasActiveSkill]);
 
   return (
-    <div className='min-h-screen w-screen bg-slate-900 flex flex-col items-center py-10 px-4 overflow-y-auto'>
-      <div className='w-full max-w-md bg-slate-800 rounded-2xl border border-slate-700 shadow-2xl p-8'>
-        <header className='flex justify-between items-center mb-8'>
+    <div className='min-h-screen w-screen bg-slate-900 flex flex-col items-center py-10 px-4 overflow-y-auto gap-6'>
+      <div className='w-full max-w-md'>
+        <header className='flex justify-between items-center mb-6'>
           <h2 className='text-2xl font-bold text-white uppercase italic tracking-tighter'>Intentionality</h2>
         </header>
 
-        <main className='space-y-6'>
-          {/* Timer Display Section */}
-          <section>
+        <div className='flex flex-col gap-6'>
+          {/* Timer Card */}
+          <Card>
             {isActive && (
-               <div className="text-center py-8 bg-slate-900/50 rounded-xl mb-4">
-                 <div className="text-6xl font-mono font-black text-orange-500">{timeLeft}s</div>
-                 {isDelayPhase && (
-                   <div className="text-sm text-slate-400 mt-2 uppercase tracking-wide">Delay</div>
-                 )}
-               </div>
+              <div className="text-center py-8 bg-slate-900/50 rounded-xl mb-4">
+                <div className="text-6xl font-mono font-black text-orange-500">{timeLeft}s</div>
+                {isDelayPhase && (
+                  <div className="text-sm text-slate-400 mt-2 uppercase tracking-wide">Delay</div>
+                )}
+              </div>
             )}
             <button 
               onClick={toggleTimer}
-              className={`w-full py-4 rounded-xl font-black uppercase
+              className={`w-full py-4 rounded-xl font-black uppercase transition
                 ${isActive ? 'text-red-100 bg-red-700 hover:bg-red-600' : 'text-orange-100 bg-orange-700 hover:bg-orange-600'}`}
             >
               {isActive ? 'Stop' : 'Start'}
             </button>
-          </section>
+          </Card>
 
-          {/* Editor Section */}
-          {hasActiveSkill && (
-            <SkillEditor 
-              skill={activeSkill} 
-              isActive={isActive}
-              onUpdate={handleSkillUpdate}
-              onDelete={handleSkillDelete}
-            />
-          )}
-          {!hasActiveSkill && (
-            <div className='text-center py-8 text-slate-400'>
-              <p className='text-sm'>No skills available. Add a skill to get started.</p>
+          {/* Editor Card */}
+          <Card>
+            {hasActiveSkill ? (
+              <SkillEditor 
+                skill={activeSkill} 
+                isActive={isActive}
+                onUpdate={handleSkillUpdate}
+                onDelete={handleSkillDelete}
+              />
+            ) : (
+              <div className='text-center py-8 text-slate-400'>
+                <p className='text-sm'>No skills available. Add a skill to get started.</p>
+              </div>
+            )}
+          </Card>
+
+          {/* Settings, Filters, and Navigation Card */}
+          <Card>
+            <div className='space-y-6'>
+              {/* Settings */}
+              <Settings
+                volume={volume}
+                delay={delay}
+                isActive={isActive}
+                settingsStorage={settingsStorage}
+                onVolumeChange={setVolume}
+                onDelayChange={setDelay}
+              />
+
+              <hr className="border-slate-700" />
+
+              {/* Filters Panel */}
+              <SkillFiltersPanel
+                selectedRoleIds={selectedRoleIds}
+                selectedHeroIds={selectedHeroIds}
+                sortBy={sortBy}
+                sortDirection={sortDirection}
+                onRoleFilterChange={setSelectedRoleIds}
+                onHeroFilterChange={setSelectedHeroIds}
+                onSortChange={handleSortChange}
+              />
+
+              <hr className="border-slate-700" />
+
+              {/* Navigation Section */}
+              <SkillList 
+                skills={filteredAndSortedSkills} 
+                activeId={hasActiveSkill ? activeSkill.id : ''} 
+                onSelect={(s) => !isActive && setActiveSkill(s)} 
+                onAdd={addSkill}
+                onReorder={!isActive ? handleReorder : () => {}}
+              />
+              
+              <button
+                onClick={resetSkills}
+                disabled={isActive}
+                className='w-full text-slate-400/70 uppercase font-bold transition-all hover:text-slate-300 disabled:opacity-50 text-sm'
+              >
+                Reset All
+              </button>
             </div>
-          )}
-
-          <hr className="border-slate-700" />
-
-          {/* Settings */}
-          <Settings
-            volume={volume}
-            delay={delay}
-            isActive={isActive}
-            settingsStorage={settingsStorage}
-            onVolumeChange={setVolume}
-            onDelayChange={setDelay}
-          />
-
-          <hr className="border-slate-700" />
-
-          {/* Filters Panel */}
-          <SkillFiltersPanel
-            selectedRoleIds={selectedRoleIds}
-            selectedHeroIds={selectedHeroIds}
-            sortBy={sortBy}
-            sortDirection={sortDirection}
-            onRoleFilterChange={setSelectedRoleIds}
-            onHeroFilterChange={setSelectedHeroIds}
-            onSortChange={handleSortChange}
-          />
-
-          <hr className="border-slate-700" />
-
-          {/* Navigation Section */}
-          <SkillList 
-            skills={filteredAndSortedSkills} 
-            activeId={hasActiveSkill ? activeSkill.id : ''} 
-            onSelect={(s) => !isActive && setActiveSkill(s)} 
-            onAdd={addSkill}
-            onReorder={!isActive ? handleReorder : () => {}}
-          />
-          
-          <button
-            onClick={resetSkills}
-            disabled={isActive}
-            className='w-full text-slate-400/70 uppercase font-bold transition-all hover:text-slate-300 disabled:opacity-50 text-sm'
-          >
-            Reset All
-          </button>
-        </main>
+          </Card>
+        </div>
       </div>
     </div>
   );
