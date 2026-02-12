@@ -11,7 +11,7 @@
 - **Progressive Depth**: The app should feel great as “just a TTS timer” for low-involvement users, while offering deep features (playlists, charts, social) for users who want to go all‑in. Advanced features should be discoverable but never overwhelming.
 
 ## Milestone Overview (High-Level Priority)
-- **Completed (V0.x)**: Core TTS loop, basic skills, local storage.
+- **Completed (V0.x, V1.0.5)**: Core TTS loop, basic skills, local storage, responsive layout.
 - **Near-Term (V1.0–V1.2)**: Better skill model & organization, responsive desktop/mobile layout, per-skill progress and ratings, and a more “game-like” personal experience—still fine if used purely locally.
 - **Medium-Term (V1.3–V1.5)**: Accounts & cloud sync, skill browsing, sharing, guides, and workout programs.
 - **Long-Term (V2.0+)**: Multi-game support (and eventually non-game skills), richer social features, and advanced analytics—without breaking the “Overwatch Safety” rule.
@@ -56,30 +56,33 @@ This milestone lays the foundation for better personal practice flows, browsing 
 
 ---
 
-## V1.0.5 – Responsive Layout & Desktop Space Efficiency
+## V1.0.5 – Responsive Layout & Desktop Space Efficiency (DONE)
 **Goal**: Revamp the UI so the app feels space-efficient on desktop while remaining mobile-first and fully responsive across all screen sizes.
 
-- [ ] **Responsive Layout System**
-  - [ ] Define breakpoints: mobile (single-column), tablet (optional two-column), desktop (split-panel layout).
-  - [ ] Layout adapts smoothly at each breakpoint—no jarring jumps; components reflow as expected.
-- [ ] **Desktop Split-Panel Layout**
-  - [ ] **Left (or primary) panel**: Timer, settings, and skill selection/filters—the “control center” for the session.
-  - [ ] **Right (or secondary) panel**: Skill info, description, and details for the currently selected skill.
-  - [ ] Panels can be collapsible or resizable on larger screens (optional polish).
-- [ ] **Mobile Preservation**
-  - [ ] Keep current mobile-friendly, single-column stacked layout as the default for small screens.
-  - [ ] Stack timer → skill selection → skill info vertically on mobile; no horizontal split.
-- [ ] **Performance Guardrails**
-  - [ ] Layout changes must be CSS-first (flexbox/grid, media queries); avoid heavy JS for responsive behavior.
-  - [ ] Ensure resize/reflow does not cause main-thread jank during Overwatch (layout thrashing).
+- [x] **Responsive Layout System**
+  - [x] Define breakpoints: mobile (single-column), tablet (same as mobile), desktop (split-panel layout at 1024px).
+  - [x] Layout adapts smoothly at each breakpoint via CSS; components reflow as expected.
+- [x] **Desktop Split-Panel Layout**
+  - [x] **Left (primary) panel**: Timer, settings, and skill selection/filters—the “control center” for the session.
+  - [x] **Right (secondary) panel**: Skill info, description, and details for the currently selected skill.
+  - [ ] Panels can be collapsible or resizable on larger screens (optional polish; deferred).
+- [x] **Mobile Preservation**
+  - [x] Keep mobile-friendly, single-column stacked layout as the default for small screens.
+  - [x] Stack timer → skill editor (detail) → controls vertically on mobile; no horizontal split.
+- [x] **Performance Guardrails**
+  - [x] Layout changes are CSS-first (flexbox/grid, media queries); no JS breakpoint detection.
+  - [x] No layout thrashing; resize/reflow is CSS-driven.
 
-**Design suggestions**:
+**Design notes** (implemented):
 - Consider a ~768px breakpoint for tablet and ~1024px for desktop split-panel.
 - On desktop, the left panel could be ~40% width and the right ~60%, or fixed min-widths to keep content readable.
 - If space allows, a collapsible right panel (e.g. sidebar that slides in/out) could maximize timer visibility when the user only needs the controls.
 
 **Dependency notes**:  
 Can be implemented alongside or after V1.0 skill model work. Improves UX for desktop/second-screen users without impacting mobile users.
+
+**Spec**: See `docs/specs/v1.0.5-responsive-layout.md` for technical architecture.  
+**Implementation**: `docs/specs/v1.0.5-implementation-report.md` | **QA Review**: `docs/specs/qa-v1.0.5-responsive-layout-review.md` (P1/P2/P3 items addressed).
 
 ---
 
